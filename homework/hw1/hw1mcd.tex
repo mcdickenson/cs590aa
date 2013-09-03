@@ -60,7 +60,7 @@ The answers to this question rely on the discussion of the master method in chap
 
 \paragraph{2.3)} $T(n) = 8 T(n/2) + n^3$, so $a=8, b=2, f(n)=n^3$. This is case 2 of the master method: $f(n)= \Theta (n^{\log_2 8})$, so $\mathbf{ T(n)= \Theta (n^3 lg n) }$
 
-\paragraph{2.4)} $T(n) = T(n^{1/2})+1$. This recurrence relation cannot be directly translated into the form of the master method, so we use a change of variables $m=lg n$. $S(m)=S(m/2)+1$, so $a_m=1, b_m=2, f(m)=1$. This is case 2 of the master method, because $S(m)=\Theta(m^{\log_2 1})=\Theta(m lg m)$. Changing back to our original variables, $T(n)=T(2^m)=S(m)=\Theta(m lg m)=\mathbf{ \Theta(lg n~lg lg n)} $
+\paragraph{2.4)} $T(n) = T(n^{1/2})+1$. This recurrence relation cannot be directly translated into the form of the master method, so we use a change of variables $m=lg n$. $S(m)=S(m/2)+1$, so $a_m=1, b_m=2, f(m)=1$. This is case 3 of the master method, because $S(m)=\Theta(m^{\log_2 1})=\Theta(lg m)$. Changing back to our original variables, $T(n)=T(2^m)=S(m)=\Theta(lg m)=\mathbf{ \Theta(lg lg n)} $
 
 \end{answer}
 
@@ -89,7 +89,7 @@ T(n=3) &=& 2(3)+1  \\
 &=& 7.
 \end{eqnarray*}
 
-More generally, $T(n)$ can be viewed as a summation series: $T(n)=\sum_{i=0}^{n-1} 2^i=2^n -1$. To see this, we use the recurrence relation $T(n)=2 T(n-1) + 1$ and see that at each step we add $2^{n-1}$ steps (this is also apparent from the result in Method 1 above). In the base case we already have a minimum of $2^1 - 1=1$ steps. For $n=2$ we add $2^{2-1}=2$ steps for a total of $2+1=3$ steps. In general, at the $n^{th}$ step we are adding $2^{n-1}$ steps to a total of $2^{n-1}-1$ steps from the $(n-1)^{th}$ iteration. Because $2^{n-1}+2^{n-1}=2\times2^{n-1}=2^n$, we can simplify the series into the closed form equation $2^n - 1$ steps. 
+More generally, $T(n)$ can be viewed as a summation series: $T(n)=\sum_{i=0}^{n-1} 2^i=2^n -1$. To see this, we use the recurrence relation $T(n)=2 T(n-1) + 1$ and see that at each step we add $2^{n-1}$ steps (this is also apparent from the result in Method 1 above). In the base case we already have a minimum of $2^1 - 1=1$ steps. For $n=2$ we add $2^{2-1}=2$ steps for a total of $2+1=3$ steps. In general, at the $n^{th}$ step we are adding $2^{n-1}$ steps to a total of $2^{n-1}-1$ steps from the $(n-1)^{th}$ iteration. Because $2^{n-1}+2^{n-1}=2\times2^{n-1}=2^n$, we can simplify the series into the closed form equation $2^n - 1$ steps (see also: Equation A.6 in CLRS). 
 
 That is, in general for input of size $n$ the Towers of Hanoi algorithm above requires $\mathbf{2^n-1}$ \textbf{operations}.
 \end{answer}
