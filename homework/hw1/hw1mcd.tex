@@ -54,13 +54,13 @@ From largest to smallest, the asymptotic size of the given functions are (with $
 \begin{answer}{2} 
 The answers to this question rely on the discussion of the master method in chapter 4 of the CLRS textbook. 
 
-\paragraph{2.1)} $T(n) = 2 T(n/3) + 1$, so $a=2, b=3, f(n)=1)$. Using the master method, this is case 1: $f(n) = O(n^{\log_3 2 - \epsilon})$, so $\mathbf{T(n)=\Theta(n^{\log_3 2})}$. 
+\paragraph{2.1} $T(n) = 2 T(n/3) + 1$, so $a=2, b=3, f(n)=1)$. Using the master method, this is case 1: $f(n) = O(n^{\log_3 2 - \epsilon})$, so $\mathbf{T(n)=\Theta(n^{\log_3 2})}$. 
 
-\paragraph{2.2)} $T(n) = 5 T(n/4) + n$, so $a=5, b=4, f(n)=n$. Again this is case 1 of the master method: $f(n)=O(n^{\log_4 5 - \epsilon})$, so $\mathbf{T(n)= \Theta (n^{\log_5 4 })}$. 
+\paragraph{2.2} $T(n) = 5 T(n/4) + n$, so $a=5, b=4, f(n)=n$. Again this is case 1 of the master method: $f(n)=O(n^{\log_4 5 - \epsilon})$, so $\mathbf{T(n)= \Theta (n^{\log_5 4 })}$. 
 
-\paragraph{2.3)} $T(n) = 8 T(n/2) + n^3$, so $a=8, b=2, f(n)=n^3$. This is case 2 of the master method: $f(n)= \Theta (n^{\log_2 8})$, so $\mathbf{ T(n)= \Theta (n^3 lg n) }$
+\paragraph{2.3} $T(n) = 8 T(n/2) + n^3$, so $a=8, b=2, f(n)=n^3$. This is case 2 of the master method: $f(n)= \Theta (n^{\log_2 8})$, so $\mathbf{ T(n)= \Theta (n^3 lg n) }$
 
-\paragraph{2.4)} $T(n) = T(n^{1/2})+1$. This recurrence relation cannot be directly translated into the form of the master method, so we use a change of variables $m=lg n$. $S(m)=S(m/2)+1$, so $a_m=1, b_m=2, f(m)=1$. This is case 3 of the master method, because $S(m)=\Theta(m^{\log_2 1})=\Theta(lg m)$. Changing back to our original variables, $T(n)=T(2^m)=S(m)=\Theta(lg m)=\mathbf{ \Theta(lg lg n)} $
+\paragraph{2.4} $T(n) = T(n^{1/2})+1$. This recurrence relation cannot be directly translated into the form of the master method, so we use a change of variables $m=lg n$. $S(m)=S(m/2)+1$, so $a_m=1, b_m=2, f(m)=1$. This is case 3 of the master method, because $S(m)=\Theta(m^{\log_2 1})=\Theta(lg m)$. Changing back to our original variables, $T(n)=T(2^m)=S(m)=\Theta(lg m)=\mathbf{ \Theta(lg lg n)} $
 
 \end{answer}
 
