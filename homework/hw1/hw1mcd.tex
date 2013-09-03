@@ -65,6 +65,26 @@ The answers to this question rely on the discussion of the master method in chap
 \end{answer}
 
 \begin{answer}{3}
+
+We wish to show that $T(n)=2T(n/2)+O(n \log n)$ is $O(n \log^2 n$For this question we cannot use the Master Theorem, since $f(n)=O(n \log n)$ falls into one of that method's two gaps. However, what follows still uses the notation of the master method for coefficients: $a=2, b=2, f(n)=O(n \log n)$. 
+
+Using a recursion tree, we can write out the terms of the recursion as it proceeds toward the base case. At the first step we have the ``glue cost'' $O(n \log n)$. At the second step (the first recursion) we have two branches ($a=2$) each of size $n/2$ ($b=2$). In general, at the $(j-1)^{th}$ step our operation is of size $2^j({n \over 2^j})$. At what level $L$ will we reach the base case $n_j=1$? We compute as follows:
+
+\begin{eqnarray*}
+{n \over L} &=& 1 \\
+n &=& b^L \\
+\log_b n &=& L \\
+lg n &=& L
+\end{eqnarray*}
+
+and see that the recursion stops at the $lg(n)^{th}$ step. This gives us the full cost of our recursion operations: $O(n lg n)+\sum_{j=0}^{lg n - 1} 2^j {n \over 2^j}$. The solution to this is given by
+\begin{eqnarray*}
+T(n) &=& O(n lg n)+\sum_{j=0}^{lg n - 1} a^j {n \over b^j} \\
+&=& O(n lg (( \sum_{j=0}^{lg n - 1} 2^j {n \over 2^j}))) \\
+&=& O(n lg(lg(n)) )\\
+&=& O(n \log^2 n)
+\end{eqnarray*}
+
 \end{answer}
 
 \begin{answer}{4}
