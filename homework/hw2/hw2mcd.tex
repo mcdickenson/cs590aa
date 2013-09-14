@@ -1,0 +1,154 @@
+\documentclass[12pt,letterpaper]{article}
+\usepackage{amsmath,amsthm,amsfonts,amssymb,amscd}
+\usepackage{fullpage}
+\usepackage{lastpage}
+\usepackage{enumerate}
+\usepackage{fancyhdr}
+\usepackage{mathrsfs}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+\usetikzlibrary{matrix}
+\usepackage[margin=3cm]{geometry}
+\setlength{\parindent}{0.0in}
+\setlength{\parskip}{0.05in}
+
+\usepackage{../compsci430}
+
+
+\newenvironment{answer}[1]{
+  \subsubsection*{Question #1}
+}
+
+
+\long\def\cps590header{\begin{center}
+\large\bf CPS 430/590.06 \hfill Prof.\ John Reif\\
+\large\bf Design and Analysis of Algorithms \hfill Fall 2013 \\
+\large\bf Homework 2 \hfill Matt Dickenson
+\end{center}}
+
+\headsep 10pt
+
+\begin{document}
+
+\cps590header
+
+% Please keep in mind that a solution usually has three parts: description of your algorithm, proof of correctness, complexity analysis.
+
+\begin{answer}{1}
+
+% If all vertices of a binary tree have 0 or 2 children, it is a full binary tree. Define Fn as number of full binary trees with n vertices. (1) Give the value of F5 by showing all the full binary trees with 5 vertices. (2) Give a recurrence relation for Fn and show that Fn is Ω(2n) by induction.
+
+\paragraph{Part 1} The following figures show all two (2) full binary trees with 5 vertices ($F_5$):
+
+
+\begin{figure}[h!]
+\begin{center}
+\input{tree1.tex}
+\end{center}
+\end{figure}
+
+\begin{figure}[h!]
+\begin{center}
+\input{tree2.tex}
+\end{center}
+\end{figure}
+
+\paragraph{Part 2} Having seen the case of $F_5=2$, we now find the recurrence relation for $F_n$. First, we can see that any binary tree must have an odd number of vertices, because there will be one root vertex and an even number of non-root vertices. For the base cases $F_1$ and $F_3$, there is exactly one full binary tree: $F_1=F_3=1$. Once we add two more nodes ($F_5$) we can place them in either of two positions on the $F_3$ tree, so $F_5=2 \times F_3=2$. 
+
+More generally, for each $n=2k+1$, $F_n= m \times F_{n-2} = m \times F_{2k-1}$, where $m$ is the number of nodes with zero children on the $F_{n-2}$ tree. Because each increase in size of two vertices leads to a one-unit increase in $m$, $m=k = {n-1 \over 2}$. Thus, the recurrence relation is $F_n = {n-1 \over 2} \times F_{n-2}$. 
+
+We can see that $F_n$ is $\Omega(2^n)$ by induction:
+
+\begin{eqnarray*}
+F_1 &=& 1 \\
+F_3 &=& 1 \\
+&=& 2^0 \\
+F_5 &=& 2 \\
+&=& 2^1 \\
+% F_7 &=& 6 \\
+% &\geq& 2^2 \\
+%%%
+F_{n} &=& {n-1 \over 2} \times {F_n} \\
+&=& {n-1 \over 2} \times {n-3 \over 2} \times {F_{n-4}} \\
+&=& k \times (k-1) \times \ldots \times 1 \\
+&=& k! \\
+&=& (2n+1)! \\
+&\geq& 2^n\\
+&=& \Omega(2^n)
+%%%%
+% F_n &=& m \times F_{n-2} \\
+% &=& {n+1} 
+%%%%
+% F_{n+2} &=& {n+1 \over 2} \times F_n \\
+% &=& {n + 1 \over 2} \times {n-1 \over 2} \times
+% brain dead  
+\end{eqnarray*}
+
+\end{answer}
+
+\begin{answer}{2} 
+% Given an array of size n with duplicated elements, design an O(nlogn) time algorithm to remove all duplicates.
+
+To create a new list with duplicates removed, I would store the $n$ elements in a binary search tree. I would store the first element of the list at the root, with all elements with lesser sort values in its left subtree and all elements with greater sort values in its right subtree (and so on for each subtree). If a value already exists in the tree, its duplicate will not be stored. The running time for this algorithm is $O(n)$ for going through the $n$-element list and $O(\log n)$ for each search to store an element or determine that it is a duplicate, for a total running time of $(n \log n)$. The tree could then be converted back into a list without duplicates. 
+
+% todo: proof of correctness, complexity analysis
+\end{answer}
+
+\begin{answer}{3}
+% Gievn an array of size n(no duplicates) which is sorted, de- sign an O(logn) time divide-and-conquer algorithm to decide whether there exits index j such that A[j] = j.
+
+Since the array is sorted and without duplicates, we can begin checking whether there exists an index $j$ such that $A[j]=j$ at $j={n \over 2}$. If $A[j]=j$ we are done, if $A[j]>j$ we check to the left ($A[{n \over 4}]$), and if $A[j]<j$ we check to the right ($A[{3n \over 4}]$). 
+
+More generally, on the $i^{th}$ iteration we visit $j_i$ and assess whether $A[j_i] = j_i$. If
+If $A[j_i]=j_i$ we are done, otherwise we go halfway between $A[j_i]$ and $A[j_{i-1}]$ so that $j_{i+1} = {j_i + j_{i-1} \over 2}$. Because each iteration bisects the list, our search takes at most $\log n$ steps, for an $O(\log n)$ algorithm. Once we have performed $\log n$ iterations we have either found the desired index $j$ or determined that there is no $j$ such that $A[j]=j$. 
+
+\end{answer}
+
+\begin{answer}{4}
+% Prove that any array of integers of size n can be sorted in O(n+(MAX −MIN)) time, where MAX(MIN) is the maximum(minimum) element of the array.
+
+% find the max and min
+% sort
+
+To sort an array $A$ of integers of size $n$ in O(n+(MAX-MIN)) time, we can use an adaptation of counting sort that leverages the additional information about the minimum and maximum values, with an auxiliary array $C$ and output array $B$ (as in CLRS):
+\begin{enumerate}
+\item Let C[0..MAX] be a new array
+\item for $i=0$ to MAX:
+\item ~~~~$C[i]=0$
+\item for $j=1$ to $n$:
+\item ~~~~$C[A[j]] = C[A[j]]+1$
+\item for $i=$ MIN to MAX:
+\item ~~~~$C[i] = C[i]+C[i-1]$
+\item for $j=n$ to $i$:
+\item ~~~~ $B[C[A[j]]] = A[j]$
+\item ~~~~ $C[A[j]] = C[A[j]]-1$
+\end{enumerate}
+\end{answer}
+
+By line 5, $C$ contains counts of how many times the element $i$ occurred in $A$. On line 7, it contains counts of all elements less than or equal to $i$ (we can ignore all indices less than MIN, assuming MIN$\geq$0). The correctness of this algorithm is apparent as it is an adaptation of counting sort: each value is inserted $C[A[j]]-C[A[j-1]]$ times (the number of times it appears in $A$) in the final output array $B$. 
+
+The running time is apparent from the number of iterations in the last two for-loops: the penultimate loop iterates (MAX-MIN) times and the final loop runs $n$ times, for a total running time of $O(n+(MAX-MIN))$. (We can drop the first two loops because they are less than or equal to $n$, and multiples of $n$ can be dropped in big-$O$ notation.)
+
+\begin{answer}{5}
+% Given two lists of size n1 and n2 which are sorted, design an O(logn1 + logn2) time algorithm to find the ith smallest element of the union list.
+
+To find the $i^{th}$ smallest element of a union list of $n_1+n_2$ elements, we can perform the following algorithm. First, combine lists $L_1$ and $L_2$ into a binary search tree, keeping track of each node's value, its right and left children, and the number of children in its left subtree (\texttt{leftChildren}). The root of $T$ is now the median ($n/2$ smallest element) of the union list. All elements lesser than the median are in the root's left subtree and all greater values are in its right subtree, and so on. Thus, we can find the $i^{th}$ smallest element using the following recursive algorithm:
+
+\begin{enumerate}
+\item find(\texttt{root}, $i$):
+\item ~~~~ if \texttt{root.leftChildren} == $i$: 
+\item ~~~~~~~~ return \texttt{root}
+\item ~~~~ else if \texttt{root.leftChildren} $<i$:
+\item ~~~~~~~~ $j=i-$ \texttt{root.leftChildren}
+\item ~~~~~~~~ return find(\texttt{root.rightChild}, $j$)
+\item ~~~~ else:
+\item ~~~~~~~~ return find(\texttt{root.leftChild}, $i$)
+\end{enumerate}
+
+The algorithm stops when it finds the node with $i$ elements in its left subtree, i.e. the $i^{th}$ smallest element in the union list. Because the search relies on a binary search tree, it takes at most $log (n_1 + n_2)$ operations. 
+
+\end{answer}
+
+
+\end{document}
