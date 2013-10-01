@@ -91,9 +91,7 @@ The $\Omega$ relation holds when $k! \geq 2^k$, i.e. for $k \approx 4$ and great
 \begin{answer}{2} 
 % Given an array of size n with duplicated elements, design an O(nlogn) time algorithm to remove all duplicates.
 
-To create a new list with duplicates removed, I would store the $n$ elements in a binary search tree. I would store the first element of the list at the root, with all elements with lesser sort values in its left subtree and all elements with greater sort values in its right subtree (and so on for each subtree). If a value already exists in the tree, its duplicate will not be stored. The running time for this algorithm is $O(n)$ for going through the $n$-element list and $O(\log n)$ for each search to store an element or determine that it is a duplicate, for a total running time of $(n \log n)$. The tree could then be converted back into a list without duplicates. 
-
-% todo: proof of correctness, complexity analysis
+To create a new list with duplicates removed, I would store the $n$ elements in a binary search tree. I would store the first element of the list at the root, with all elements with lesser sort values in its left subtree and all elements with greater sort values in its right subtree (and so on for each subtree). If a value already exists in the tree, its duplicate will not be stored. The running time for this algorithm is $O(n)$ for going through the $n$-element list and $O(\log n)$ for each search to store an element or determine that it is a duplicate, for a total running time of $O(n \log n)$. The tree could then be converted back into a list without duplicates. 
 \end{answer}
 
 \begin{answer}{3}
@@ -108,9 +106,6 @@ If $A[j_i]=j_i$ we are done, otherwise we go halfway between $A[j_i]$ and $A[j_{
 
 \begin{answer}{4}
 % Prove that any array of integers of size n can be sorted in O(n+(MAX −MIN)) time, where MAX(MIN) is the maximum(minimum) element of the array.
-
-% find the max and min
-% sort
 
 To sort an array $A$ of integers of size $n$ in O(n+(MAX-MIN)) time, we can use an adaptation of counting sort that leverages the additional information about the minimum and maximum values, with an auxiliary array $C$ and output array $B$ (as in CLRS):
 \begin{enumerate}
@@ -129,7 +124,7 @@ To sort an array $A$ of integers of size $n$ in O(n+(MAX-MIN)) time, we can use 
 
 By line 5, $C$ contains counts of how many times the element $i$ occurred in $A$. On line 7, it contains counts of all elements less than or equal to $i$ (we can ignore all indices less than MIN, assuming MIN$\geq$0). The correctness of this algorithm is apparent as it is an adaptation of counting sort: each value is inserted $C[A[j]]-C[A[j-1]]$ times (the number of times it appears in $A$) in the final output array $B$. 
 
-The running time is apparent from the number of iterations in the last two for-loops: the penultimate loop iterates (MAX-MIN) times and the final loop runs $n$ times, for a total running time of $O(n+(MAX-MIN))$. (We can drop the first two loops because they are less than or equal to $n$, and multiples of $n$ can be dropped in big-$O$ notation.)
+The running time is apparent from the number of iterations in the last two for-loops: the penultimate loop iterates (MAX-MIN) times and the final loop runs $n$ times, for a total running time of $O(n+(MAX-MIN))$. (We can drop the first two loops because they are less than or equal to $n$, and constant coefficients of $n$ can be dropped in big-$O$ notation.)
 
 \begin{answer}{5}
 % Given two lists of size n1 and n2 which are sorted, design an O(logn1 + logn2) time algorithm to find the ith smallest element of the union list.
