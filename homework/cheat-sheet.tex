@@ -35,7 +35,8 @@
 \paragraph{Useful Equations}
 \begin{eqnarray*}
 \sum_{k=1}^n k &=& \frac{1}{2}n(n+1) = \Theta(n^2) \\
-% Stirling's approximation
+\sum_{k=1}^n p^i &=& {1-p^{k+1} \over 1 - p} \\ 
+\text{Stirling:}~~~n! &\approx& \sqrt{2\pi n} ({ n \over e})^n
 \end{eqnarray*}
 
 \paragraph{Amortized Analysis}
@@ -54,8 +55,34 @@ For recurrences of the form $T(n)=a T(n/b) + f(n)$, where $a$ is the number of b
 \item $f(n)=\Omega(n^{\log_b a + \epsilon}) \rightarrow T(n)=\Theta(f(n))$: weight decreases because $b>a$
 \end{list}
 
-\pagebreak
-\paragraph{Recursion Trees}
+% \pagebreak
+% \paragraph{Recursion Trees}
+
+\paragraph{Amortized Analysis} The amortized cost (upper bound) $\hat{c}_i$ for the potential function $\Phi$ and data $D_i$ is defined as:
+\begin{eqnarray*}
+\hat{c}_i &=& c_i + \Phi(D_i) - \Phi(D_{i-1}) \\
+\sum_{i=1}^n \hat{c}_i &=& \sum_{i=1}^n c_i + \Phi(D_n) - \Phi(D_0)
+\end{eqnarray*}
+
+\paragraph{Hashing} A hash function is \emph{perfect} if it causes no collisions, but there is no perfect hash function if $|S|>m$. 
+
+Chaining: put a linked list at each of the slots in the table, cost is proportional to length of the lists. Good hash functions:
+\begin{eqnarray*}
+h(k) = k mod~m \\
+h(k) = (ak + b) mod~m \\
+h(k) = ((ax + b) mod~p) mod~m
+\end{eqnarray*}
+
+A family $H$ of hash functions from $U$ to $M$ is 2-universal if for all $x \neq y$, $Pr(h(x)=h(y)) \leq {1 \over m}$. BUT there are $u^m$ functions from $U$ to $M$, requiring $m \log u$ bits to choose/represent/store. We just pick one at random. For $r$ operations, the expected total work is $r(1+{s \over m})$. 
+
+Good hashing: Let $m$ be a prime number, $(x_0, ..., x_r)$ represent a key $x$, $\bar{a}=(a_0, ..., a_r)$. 
+
+\begin{eqnarray*}
+h_{\bar{a}}(x)= (\sum_{i=0}^r a_i x_i) mod~m \\
+H = \{ h_{\bar{a}}(x) | a_i \in \{0, ..., m-1 \} \}
+\end{eqnarray*}
+
+Open-addressing: Load factor for number of keys $n$ is $\alpha={n \over m}$. Search takes $\Theta(1+\alpha)$ expected time. Because elements are stored in the table itself, the load factor cannot exceed 1. The expected number of probes for inserting in a table with load factor $\alpha$ is $1 \over 1-\alpha$. The expected number of probes for a successful search is ${1 \over \alpha} ln {1 \over 1-\alpha} + {1 \over \alpha}$.
 
 
 \end{document}
