@@ -1,0 +1,58 @@
+\documentclass[12pt,letterpaper]{article}
+\usepackage{amsmath,amsthm,amsfonts,amssymb,amscd}
+\usepackage{fullpage}
+\usepackage{lastpage}
+\usepackage{enumerate}
+\usepackage{fancyhdr}
+\usepackage{mathrsfs}
+\usepackage{mathtools}
+\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+\usetikzlibrary{matrix}
+\usepackage[margin=3cm]{geometry}
+\setlength{\parindent}{0.0in}
+\setlength{\parskip}{0.05in}
+
+\usepackage{../compsci430}
+
+
+\newenvironment{answer}[1]{
+  \subsubsection*{Question #1}
+}
+
+
+\long\def\cps590header{\begin{center}
+\large\bf CPS 430/590.06 \hfill Prof.\ John Reif\\
+\large\bf Design and Analysis of Algorithms \hfill Fall 2013 \\
+\large\bf Homework 4 \hfill Matt Dickenson
+\end{center}}
+
+\headsep 10pt
+
+\begin{document}
+
+\cps590header
+
+% DUE NOVEMBER 6 
+
+
+\begin{answer}{1}
+% Design a linear-time algorithm to find an odd-length cycle in a directed graph.
+\end{answer}
+
+
+\begin{answer}{2}
+% Design an efficient algorithm to determine, in a directed graph G = (V, E), whether or not there exists a vertex v ∈ V from which all other vertices are reachable.
+\end{answer}
+
+\begin{answer}{3}
+% Design an efficient algorithm to compute the number of different directed paths from vertex v to vertex w in a directed acyclic graph G.
+\end{answer}
+
+\begin{answer}{4}
+% Design a linear-time algorithm to determine, in a directed acyclic graph G, whether or not there is a directed path that touches every vertex exactly once.
+\end{answer}
+
+\end{document}
