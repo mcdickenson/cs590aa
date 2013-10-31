@@ -40,6 +40,12 @@
 
 \begin{answer}{1}
 % Design a linear-time algorithm to find an odd-length cycle in a directed graph.
+
+% I am considering to do a Breadth First Search on the graph and trying to label the vertices black and white such that no two vertices labeled with the same color are adjacent.
+
+% The reason that works is that if you label the vertices by their depth while doing BFS, then all edges connect either same labels or labels that differ by one. It's clear that if there is an edge connecting the same labels then there is an odd cycle. If not then we can color all odd labels white and all even labels black.
+
+% O(|V|+|E|)
 \end{answer}
 
 
