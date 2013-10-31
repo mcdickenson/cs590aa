@@ -51,6 +51,12 @@
 
 \begin{answer}{2}
 % Design an efficient algorithm to determine, in a directed graph G = (V, E), whether or not there exists a vertex v ∈ V from which all other vertices are reachable.
+
+% For two nodes V and U, and reachability r(v), r(u), then u \in r(v) --> r(u) in r(v)
+% This suggests a recursive (greedy?) algorithm should work 
+% Do it like Floyd-Warshall, but just keep track of reachability
+% Note that this now works even for negative paths 
+% Just need to go until some r(v) = V 
 \end{answer}
 
 \begin{answer}{3}
@@ -69,13 +75,6 @@
 
 \begin{answer}{4}
 % Design a linear-time algorithm to determine, in a directed acyclic graph G, whether or not there is a directed path that touches every vertex exactly once.
-
-% \begin{itemize}
-% \item Depth-first search
-% \item Topological order (pop order)
-% \item Check the topological order
-% \item If 
-% \end{itemize}
 
 % a DAG has a unique topological ordering if and only if it has a directed path containing all the vertices, in which case the ordering is the same as the order in which the vertices appear in the path
 
