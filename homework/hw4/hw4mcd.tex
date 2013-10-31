@@ -49,10 +49,34 @@
 
 \begin{answer}{3}
 % Design an efficient algorithm to compute the number of different directed paths from vertex v to vertex w in a directed acyclic graph G.
+
+% input: v, w
+% output: count_of_paths 
+
+% topological ordering starting at (v)
+% for each i=(2..w-1) see if there is a path (v-> ...-> i-> ...-> w) [
+%   cf shortest path--we want to keep a count of all paths]
+% add up the total number of paths
+
+
 \end{answer}
 
 \begin{answer}{4}
 % Design a linear-time algorithm to determine, in a directed acyclic graph G, whether or not there is a directed path that touches every vertex exactly once.
+
+% \begin{itemize}
+% \item Depth-first search
+% \item Topological order (pop order)
+% \item Check the topological order
+% \item If 
+% \end{itemize}
+
+% a DAG has a unique topological ordering if and only if it has a directed path containing all the vertices, in which case the ordering is the same as the order in which the vertices appear in the path
+
+% topological order is linear
+
+% http://en.wikipedia.org/wiki/Directed_acyclic_graph
+
 \end{answer}
 
 \end{document}
