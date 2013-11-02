@@ -4,6 +4,14 @@
 \usepackage{lastpage}
 \usepackage{enumerate}
 \usepackage{fancyhdr}
+\usepackage{listings}
+\lstset{
+	numbers=left,
+	numbersep=5pt,
+	stepnumber=1,
+	tabsize=2,
+	showstringspaces=false
+}
 \usepackage{mathrsfs}
 \usepackage{mathtools}
 \DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
@@ -52,8 +60,6 @@ Because we label all vertices according to their distance from the root, then ev
 
 % Design a linear-time algorithm to find an odd-length cycle in a directed graph.
 
-% http://stackoverflow.com/questions/8146620/how-to-check-if-an-undirected-graph-has-an-odd-length-cycle
-
 % I am considering to do a Breadth First Search on the graph and trying to label the vertices black and white such that no two vertices labeled with the same color are adjacent.
 
 % The reason that works is that if you label the vertices by their depth while doing BFS, then all edges connect either same labels or labels that differ by one. It's clear that if there is an edge connecting the same labels then there is an odd cycle. If not then we can color all odd labels white and all even labels black.
@@ -64,6 +70,27 @@ Because we label all vertices according to their distance from the root, then ev
 
 \begin{answer}{2}
 % Design an efficient algorithm to determine, in a directed graph G = (V, E), whether or not there exists a vertex v ∈ V from which all other vertices are reachable.
+
+We are interesting in determining, for a directed graph $G=\{V,E\}$, whether or not there exists a vertex $v \in V$ from which all other vertices are reachable. Notice that for two vertices $u, v \in V$ and an the vertices reachable from each of them, denoted $r(u)$ and $r(v)$, if $u \in r(v)$ then $r(u) \in r(v)$. This suggests that a greedy algorithm will work, storing each $r(v)$ as a set. If we reach a vertex for which $r(v)=V$, then we return \texttt{true}, else we return \texttt{false}. The pseudo-code for this algorithm is similar to Floyd-Warshall, but we store reachability relations rather than the shortest path (we regard the vertices as integers from 1 to $n=|V|$:
+
+\begin{lstlisting}
+for each vertex v in V:
+	v.reachable = {v}
+for each edge (u,v) in E:
+	u.reachable = v.reachable
+
+for each k in V:
+	for each i in V:
+	  for each j in V:
+	  	if k in i.reachable and j in k.reachable:
+	  		i.reachable = union(i.reachable, j.reachable)
+	  		if i.reachable == V:
+		  	  return true 
+
+return false    
+\end{lstlisting}
+
+The running time for this algorithm is $O(|V|^3 + |E|)$.
 
 % For two nodes V and U, and reachability r(v), r(u), then u \in r(v) --> r(u) in r(v)
 % This suggests a recursive (greedy?) algorithm should work 
