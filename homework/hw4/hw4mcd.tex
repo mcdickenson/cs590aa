@@ -102,6 +102,11 @@ The running time for this algorithm is $O(|V|^3 + |E|)$.
 \begin{answer}{3}
 % Design an efficient algorithm to compute the number of different directed paths from vertex v to vertex w in a directed acyclic graph G.
 
+We wish to compute the number of different directed paths from vertex $v$ to vertex $w$ in a directed acyclic graph G. Because the graph is a DAG, we can compute a topological ordering starting at $v$. We do this by conducting a depth-first search and storing the topological order as the reverse of the order in which vertices are popped off the stack. Once we have the topological order, we then iterate over all vertices $i, v<i<w$, and see whether there is a path from $v$ to $w$ containing $i$. If there is, we add the path containing $i$ to the existing list of paths. 
+
+
+The time to compute the topological ordering is linear in the number of vertices, $O(|V|)$, and the iteration over $i$ is at most $O(|V|)$. Thus, the total running time is linear: $O(|V|)$. 
+
 % input: v, w
 % output: count_of_paths 
 
