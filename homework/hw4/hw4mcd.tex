@@ -71,7 +71,7 @@ Because we label all vertices according to their distance from the root, then ev
 \begin{answer}{2}
 % Design an efficient algorithm to determine, in a directed graph G = (V, E), whether or not there exists a vertex v ∈ V from which all other vertices are reachable.
 
-We are interesting in determining, for a directed graph $G=\{V,E\}$, whether or not there exists a vertex $v \in V$ from which all other vertices are reachable. Notice that for two vertices $u, v \in V$ and an the vertices reachable from each of them, denoted $r(u)$ and $r(v)$, if $u \in r(v)$ then $r(u) \in r(v)$. This suggests that a greedy algorithm will work, storing each $r(v)$ as a set. If we reach a vertex for which $r(v)=V$, then we return \texttt{true}, else we return \texttt{false}. The pseudo-code for this algorithm is similar to Floyd-Warshall, but we store reachability relations rather than the shortest path (we regard the vertices as integers from 1 to $n=|V|$:
+We are interesting in determining, for a directed graph $G=\{V,E\}$, whether or not there exists a vertex $v \in V$ from which all other vertices are reachable. Notice that for two vertices $u, v \in V$ and sets of the vertices reachable from each of them, denoted $r(u)$ and $r(v)$, if $u \in r(v)$ then $r(u) \in r(v)$ (i.e. if $u$ is reachable from $v$, then all nodes reachable from $u$ are reachable from $v$). This suggests that a greedy algorithm will work, storing each $r(v)$ as a set. If we reach a vertex for which $r(v)=V$, then we return \texttt{true}, else we return \texttt{false}. The pseudo-code for this algorithm is similar to Floyd-Warshall, but we store reachability relations rather than the shortest path (we regard the vertices as integers from 1 to $n=|V|$:
 
 \begin{lstlisting}
 for each vertex v in V:
@@ -102,10 +102,10 @@ The running time for this algorithm is $O(|V|^3 + |E|)$.
 \begin{answer}{3}
 % Design an efficient algorithm to compute the number of different directed paths from vertex v to vertex w in a directed acyclic graph G.
 
-We wish to compute the number of different directed paths from vertex $v$ to vertex $w$ in a directed acyclic graph G. Because the graph is a DAG, we can compute a topological ordering starting at $v$. We do this by conducting a depth-first search and storing the topological order as the reverse of the order in which vertices are popped off the stack. Once we have the topological order, we then iterate over all vertices $i, v<i<w$, and see whether there is a path from $v$ to $w$ containing $i$. If there is, we add the path containing $i$ to the existing list of paths. 
+We wish to compute the number of different directed paths from vertex $v$ to vertex $w$ in a directed acyclic graph G. Because the graph is a DAG, we can compute a topological ordering starting at $v$. We do this by conducting a depth-first search and storing the topological order as the reverse of the order in which vertices are popped off the stack. Once we have the topological order, we then iterate over all vertices $i, v<i<w$, and see whether there is a path from $v$ to $w$ containing $i$. If there is, we add the path containing $i$ to the existing list of paths. We return the length of the final list of paths. 
 
 
-The time to compute the topological ordering is linear in the number of vertices, $O(|V|)$, and the iteration over $i$ is at most $O(|V|)$. Thus, the total running time is linear: $O(|V|)$. 
+The time to compute the topological ordering is linear in the number of vertices, $O(|V|)$, and the iteration over $i$ is at most $O(|V| + |E|)$. Thus, the total running time is $O(|V| + |E|)$. 
 
 % input: v, w
 % output: count_of_paths 
@@ -121,11 +121,21 @@ The time to compute the topological ordering is linear in the number of vertices
 \begin{answer}{4}
 % Design a linear-time algorithm to determine, in a directed acyclic graph G, whether or not there is a directed path that touches every vertex exactly once.
 
+In this problem we wish to design a linear-time algorithm that determines, in a directed acyclic graph $G$, whether or not there is a directed path that touches every vertex exactly once (i.e. a Hamiltonian path). Notice that if such a path exists then there must be a unique topological sorting of $G$: the ordering is the same as the path. 
+
+To show that this is approach valid, assume that at least two topological orderings of $G$ exist. If this is the case, then at some point in the path there must be two valid options for us to take, $v_1$ and $v_2$, and choosing one means that the other cannot be included in the path (otherwise we would have to sort one before the other). Thus, there can be no unique path that visits every vertex exactly once if there is more than one topological ordering.  
+
+To make the determination, we start with a topological sorting of $G$, which we can compute by conducting a depth-first search and setting the topological order as the reverse of the order in which vertices are popped off the stack. Once we have a single topological ordering, we need to determine whether a second valid ordering exists. To do so, we can iterate over the ordering, checking whether consecutive vertices have an edge between them. If they do not, we can try swapping them and seeing whether the ordering is valid. If it is, then the original ordering is not unique and there is no unique path. 
+
+The running time for this algorithm is the time it takes to generate the topological ordering plus the time to iterate over the initial ordering, which reduces to $O(|V| + |E|)$. Thus, we have found a linear time algorithm for determining whether the desired path exists.  
+
+
 % a DAG has a unique topological ordering if and only if it has a directed path containing all the vertices, in which case the ordering is the same as the order in which the vertices appear in the path
-
 % topological order is linear
-
 % http://en.wikipedia.org/wiki/Directed_acyclic_graph
+
+% If a Hamiltonian path exists, the topological sort order is unique; no other order respects the edges of the path. Conversely, if a topological sort does not form a Hamiltonian path, the DAG will have two or more valid topological orderings, for in this case it is always possible to form a second valid ordering by swapping two consecutive vertices that are not connected by an edge to each other. Therefore, it is possible to test in linear time whether a unique ordering exists, and whether a Hamiltonian path exists, despite the NP-hardness of the Hamiltonian path problem for more general directed graphs (Vernet & Markenzon 1997).
+% http://en.wikipedia.org/wiki/Topological_ordering
 
 \end{answer}
 
