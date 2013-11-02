@@ -37,9 +37,22 @@
 
 % DUE NOVEMBER 6 
 
+% 1. describe algorithm
+% 2. calculate complexity
+% 3. proof of correctness
+
 
 \begin{answer}{1}
+
+For this problem we seek a linear-time algorithm to find an odd-length cycle in a directed graph. Given a graph $G=\{V,E\}$ and a root $v \in V$, we perform a breadth-first search of $G$. As we do so, we store the vertices of $G$ in a breadth-first tree $T$. We regard the root of $T$ as the $0^{th}$ level, its children as the $1^{st}$ level, and so on. At even levels of $T$, we color the vertices white, and at odd levels we color the vertices black. Once we have completed the breadth-first search, we then check whether any adjacent vertices have the same color. If so, those vertices belong to an odd-length cycle. 
+
+The running time of this algorithm is the time it takes to conduct the breadth-first search, plus the time to go through the tree and check whether each node is adjacent to a node of the same color. Each vertex in the tree can store a reference to its immediate neighbors in the graph, for quick lookup. The running time for the breadth-first search is $O(|V| + |E|)$, and the running time to check each vertex of the tree for an adjacent vertex of the same color is $O(|V| + |E|)$ as well (because each vertex and its neigbors is checked). Thus, the total running time reduces to $O(|V| + |E|)$.
+
+Because we label all vertices according to their distance from the root, then every vertex is either white or black and each edge connects vertices of the same or different colors. If no cycles exist or if the only cycles are of even-length, then every edge will connect two nodes of different colors. This is because the distance between the root (colored white) and any black node is an odd number of edges, and the distance between the root and any other white node is an even number of edges. If two adjacent vertices $v_1$ and $v_2$ are the same color, the length of the cycle \emph{without} the edge connecting $v_1$ and $v_2$ must be even (because the length of the sides of the cycle are either both odd or both even, and so their sum must be even). Adding the edge connecting $v_1$ and $v_2$, the length of the cycle must be odd. Thus, the algorithm is correct. 
+
 % Design a linear-time algorithm to find an odd-length cycle in a directed graph.
+
+% http://stackoverflow.com/questions/8146620/how-to-check-if-an-undirected-graph-has-an-odd-length-cycle
 
 % I am considering to do a Breadth First Search on the graph and trying to label the vertices black and white such that no two vertices labeled with the same color are adjacent.
 
