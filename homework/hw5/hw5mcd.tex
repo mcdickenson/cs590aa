@@ -1,0 +1,93 @@
+\documentclass[12pt,letterpaper]{article}
+\usepackage{amsmath,amsthm,amsfonts,amssymb,amscd}
+\usepackage{fullpage}
+\usepackage{lastpage}
+\usepackage{enumerate}
+\usepackage{fancyhdr}
+\usepackage{listings}
+\lstset{
+	numbers=left,
+	numbersep=5pt,
+	stepnumber=1,
+	tabsize=2,
+	showstringspaces=false
+}
+\usepackage{mathrsfs}
+\usepackage{mathtools}
+\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+\usetikzlibrary{matrix}
+\usepackage[margin=3cm]{geometry}
+\setlength{\parindent}{0.0in}
+\setlength{\parskip}{0.05in}
+
+\usepackage{../compsci430}
+
+
+\newenvironment{answer}[1]{
+  \subsubsection*{Question #1}
+}
+
+
+\long\def\cps590header{\begin{center}
+\large\bf CPS 430/590.06 \hfill Prof.\ John Reif\\
+\large\bf Design and Analysis of Algorithms \hfill Fall 2013 \\
+\large\bf Homework 5 \hfill Matt Dickenson
+\end{center}}
+
+\headsep 10pt
+
+\begin{document}
+
+\cps590header
+
+% DUE NOVEMBER 6 
+
+% 1. describe algorithm
+% 2. calculate complexity
+% 3. proof of correctness
+
+
+\begin{answer}{1}
+We can develop an algorithm to find the shortest path between vertices $a$ and $b$ in a weighted-edge (possibly negative) directed graph, with a guarantee that there will be at most $k$ edges in the shortest path. To develop this algorithm we can use a ``greedy'' design. 
+
+The algorithm takes as input the graph, represented by its vertices and edges, as well as the vertices of interest $a$ and $b$. We can use two arrays ($d$ and $p$) to store the distance and path information. We also rely on the special values \texttt{null} to represent the empty set and \texttt{MAX} to represent $+\inf$.
+
+\begin{lstlisting}
+findShortestPath(a, b, edges, vertices):
+
+# initialize with infinite distances from a to each node
+predecessor = [null] * vertices.length
+distance = [MAX] * vertices.length
+distance[a] = 0 
+
+# greedy step 
+for i in 1..k:
+  for e in edges:
+    if distance[e.source] + e.weight < distance[e.destination]:
+    	distance[e.destination] = distance[e.source] + e.weight 
+    	predecessor[e.destination] = e.source 
+\end{lstlisting}
+
+This algorithm works because we are guaranteed to find the shortest path that is no longer than $k$ edges by the greedy step. Our double loop takes $k\times|E|$ iterations, for a running time of $O(k|E|)$ as desired. 
+
+\end{answer}
+
+
+\begin{answer}{2}
+
+\end{answer}
+
+
+\begin{answer}{3}
+
+\end{answer}
+
+
+\begin{answer}{4}
+
+\end{answer}
+
+\end{document}
