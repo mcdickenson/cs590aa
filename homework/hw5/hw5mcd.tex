@@ -140,7 +140,15 @@ This algorithm has an expected running time less than Dijkstra's algorithm, beca
 
 
 \begin{answer}{3}
+We wish to prove that in an undirected graph with distinct edge weights there exists a unique minimum spanning tree. We will prove this by contradiction:
 
+\begin{enumerate}
+\item Assume, for purposes of proof by contradiction, that there exist two distinct minimum spanning trees $T_1$ and $T_2$. 
+\item Identify the minimum edge in $T_1$ but not $T_2$, and call it $\underline{e}$. 
+\item Because $T_2$ is also a minimum spanning tree, adding the edge $\underline{e}$ to $T_2$ must induce a cycle
+\item The cycle identified in the previous step must contain an edge $\overline{e}$ with a greater weight than $\underline{e}$, because all edges in $T_2$ with a lower weight are included in $T_1$ due to our choice of $\underline{e}$ in step 2. 
+\item Thus, substituting $\underline{e}$ for $\overline{e}$ in $T_2$ would yield a new spanning tree with smaller weight than $T_2$. We have arrived at a contradiction of our original assumption that $T_2$ is a minimum spanning tree. 
+\end{enumerate}
 \end{answer}
 
 
