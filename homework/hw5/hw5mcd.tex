@@ -53,11 +53,9 @@
 \begin{answer}{1}
 We can develop an algorithm to find the shortest path between vertices $a$ and $b$ in a weighted-edge (possibly negative) directed graph, with a guarantee that there will be at most $k$ edges in the shortest path. To develop this algorithm we can use a ``greedy'' design. 
 
-The algorithm takes as input the graph, represented by its vertices and edges, as well as the vertices of interest $a$ and $b$. We can use two arrays ($d$ and $p$) to store the distance and path information. We also rely on the special values \texttt{null} to represent the empty set and \texttt{MAX} to represent $+\inf$.
+The algorithm takes as input the graph, represented by its vertices and edges, as well as the vertices of interest $a$ and $b$. We can use two arrays ($d$ and $p$) to store the distance and path information (regard the values of each vertex to be the real numbers from 0 to $vertices.length-1$). We also rely on the special values \texttt{null} to represent the empty set and \texttt{MAX} to represent $+\inf$.
 
 \begin{lstlisting}
-findShortestPath(a, b, edges, vertices):
-
 # initialize with infinite distances from a to each node
 predecessor = [null] * vertices.length
 distance = [MAX] * vertices.length
@@ -77,7 +75,67 @@ This algorithm works because we are guaranteed to find the shortest path that is
 
 
 \begin{answer}{2}
+In this problem we want to find the shortest cycle containing an edge $e$ in a graph with positive weighted edges. Because of the postive edge constraint on the graph, it is safe to use a modified version of Dijkstra's algorithm starting at $e$. We can also reframe the problem of finding the shortest cycle containing $e$ as finding the shortest path from $e$ to $e$ (as long as we ensure that this path contains at least one edge). We use the graph as well as an array of distances from $e$. Again, regard the values of each vertex to be the real numbers from 0 to $vertices.length-1$
 
+% \begin{lstlisting}
+% modifiedDijkstra(e, vertices, edges):
+% 	distance = [MAX] * vertices.length
+% 	distance[e] = 0 
+% 	visited = [false] * vertices.length
+% 	unvisited = vertices
+
+% 	recursiveStep(e, distance, visited, unvisited)
+
+% recursiveStep(e, distance, visited, unvisited):
+% 	current = e 
+
+% 	for edge in current.neighbors:
+% 	  unless visited[edge.destination]:
+% 	    distance[]
+
+% 	  if distance[current] + edge.weight < distance[edge.destination]:
+%     	distance[edge.destination] = distance[current] + edge.weight
+%     	best_destination = edge.destination
+%   visited[current] = true 
+%   unvisited.remove(current) 
+
+%   if visited[best_destination]: 
+%     return distance, visited, unvisited
+%   else:
+%     recursiveStep(best_destination, distance, visited, unvisited)
+
+% \end{lstlisting}
+
+\begin{lstlisting}
+modifiedDijkstra(e, vertices, edges):
+	distance = [MAX] * vertices.length
+	distance[e] = 0 
+	predecessor = [null] * vertices.length
+	
+	Q = {e} # min-queue by distance[]
+
+	until Q is empty:
+		current = Q.dequeue
+		if current == e and predecessor[e] != null:
+		  return 
+		else if visited[current]:
+		  next
+		visited[current] = true
+
+  	for edge in current.neighbors:
+  	  if distance[current] + edge.weight < distance[edge.destination]:
+  	  		distance[edge.destination] = distance[current] + edge.weight
+  	  		predecessor[edge.destination] = current
+  	  		Q.enqueue(edge.destination)
+\end{lstlisting}
+
+This algorithm has an expected running time less than Dijkstra's algorithm, because we have an earlier stopping point when we get back to the initial node $e$ during our search. However, the worse case running time is still the same: $O(|E| + |V|^2)=O(|V|^2)$, as desired. The correctness of the algorithm is based on the correctness of Dijkstra's algorithm and the insight that the shortest cycle containing $e$ is also the shortest path from $e$ to itself with at least one edge. 
+% http://stackoverflow.com/questions/3911626/find-cycle-of-shortest-length-in-a-directed-graph-with-positive-weights
+% You can easily modify Floyd-Warshall algorithm. (If you're not familiar with graph theory at all, I suggest checking it out, e.g. getting a copy of Introduction to Algorithms).
+
+% Traditionally, you start path[i][i] = 0 for each i. But you can instead start from path[i][i] = INFINITY. It won't affect algorithm itself, as those zeroes weren't used in computation anyway (since path path[i][j] will never change for k == i or k == j).
+
+% In the end, path[i][i] is the length the shortest cycle going through i. Consequently, you need to find min(path[i][i]) for all i. And if you want cycle itself (not only its length), you can do it just like it's usually done with normal paths: by memorizing k during execution of algorithm.
 \end{answer}
 
 
