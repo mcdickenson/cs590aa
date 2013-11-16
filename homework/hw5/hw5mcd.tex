@@ -153,6 +153,28 @@ We wish to prove that in an undirected graph with distinct edge weights there ex
 
 
 \begin{answer}{4}
+% Design an algorithm to compute the maximum spanning tree of a graph.
+To compute the maximum spanning tree of a graph, we could multiply all of the edges by $-1$ and find the minimum spanning tree of the modified graph using a known algorithm, such as Prim's. 
+
+More formally (and without modifications to the graph), we can reverse the keying of the priority queue $Q$ used in Prim's algorithm (as discussed in class) to prioritize the vertex in $Q$ with the weight of the ``heaviest'' edge connecting it to a vertex in the subgraph. We denote the vertices of the graph by $G$. 
+
+\begin{lstlisting}
+Q = V 
+for v in V:
+  key[v] = MAX 
+key[start] = 0 
+predecessor = [null] * V.length 
+
+until Q is empty:
+  u = Q.dequeue
+    for v in u.neighbors:
+    	w = weight(u, v)
+      if Q.contains(v) and w < key[v]:
+        key[v] = w
+        predecessor[v] = u 
+\end{lstlisting}
+
+When the algorithm is complete, we can begin at the arbitrary \texttt{start} vertex and follow the path through the \texttt{predecessors} array. Note that the maximum spanning tree is not necessarily unique, just as the minimum spanning tree is not necessarily unique, unless all edges have distinct weights. The correctness of this algorithm is evident from its correspondence to Prim's algorithm. If we let $w$ be the time required by the \texttt{weight} operation, the running time is $\Theta(V)\times w + \Theta(E)$. 
 
 \end{answer}
 
