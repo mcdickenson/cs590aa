@@ -1,0 +1,63 @@
+\documentclass[12pt,letterpaper]{article}
+\usepackage{amsmath,amsthm,amsfonts,amssymb,amscd}
+\usepackage{fullpage}
+\usepackage{lastpage}
+\usepackage{enumerate}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage{mathrsfs}
+\usepackage{natbib}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+\usetikzlibrary{matrix}
+\usepackage[margin=3cm]{geometry}
+\setlength{\parindent}{0.25in}
+\setlength{\parskip}{0.05in}
+
+\usepackage{compsci430}
+
+
+\newenvironment{answer}[1]{
+  \subsubsection*{Question #1}
+}
+
+
+\long\def\cps590header{\begin{center}
+\large\bf CPS 430/590.06 \hfill Prof.\ John Reif\\
+\large\bf Design and Analysis of Algorithms \hfill Fall 2013 \\
+\large\bf Project Abstract \hfill Matt Dickenson
+\end{center}}
+
+\headsep 10pt
+
+\begin{document}
+
+\cps590header
+
+\paragraph{Project Title:} Machine Learning Algorithms with Application to Political Event Data
+
+\paragraph{Project Description} This project will analyze two machine learning algorithms and discuss their application to automated processing of political event data. The first algorithm, Hidden Markov Modeling (HMM), uses observed data to make inferences about an unobserved latent state. The second method, Hierarchical Association Rule Modeling (HARM) selects a subset of decision rules from a set of candidates to classify observations categorically. Applying machine learning to the classification of political event data can greatly reduce the cost in human effort, time, and money. 
+
+The motivation for this project is to update the Militarized Interstate Disputes (MID) dataset, which has been widely used in academic research and policy discussions. The MID project relies on humans reading journalistic accounts and manually entering the classification of the event according to a defined schema \citep{gerner1994, grimmer2013}. This dependence on humans is both less accurate, less efficient, and more expensive than automated methods \citep{king2003automated, mikhaylov2012coder, ruggeri2011events}. The most recent version of MID data was released in 2004; an update through 2010 is delayed indefinitely and has cost millions of dollars.
+
+This project will explore whether HMM and HARM can help automate the processing of political event indicators to update the MID dataset. The final paper will include an analysis of the algorithms used for HMM and HARM, a comparison in cost and complexity to extant methods for processing event data, and preliminary results for automating the production of MID data.
+
+
+% in paper:
+% discuss human-intensive methods of coding in terms of their algorithmic complexity and costs
+% discuss HMM and HARM
+% present preliminary results from gdelt -> mids
+
+% \pagebreak
+% \onehalfspacing
+% \singlespacing
+% \setcitestyle{authordate,round,semicolon,aysep={,},yysep={,}}
+% \bibpunct[:]{(}{)}{;}{a}{,}{,}
+\renewcommand{\bibsection}{\paragraph{References}}
+\setlength{\bibsep}{0.0pt}
+\bibliographystyle{/Users/mcdickenson/Documents/Templates/chicago}
+\bibliography{/Users/mcdickenson/Documents/Templates/RefLib.bib}
+
+
+\end{document}
