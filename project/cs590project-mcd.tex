@@ -1,5 +1,6 @@
 \documentclass[12pt,letterpaper]{article}
 \usepackage{amsmath,amsthm,amsfonts,amssymb,amscd}
+\usepackage{booktabs}
 \usepackage{fullpage}
 \usepackage{lastpage}
 \usepackage{enumerate}
@@ -8,7 +9,9 @@
 \usepackage{mathrsfs}
 \usepackage{natbib}
 \usepackage{xcolor}
+\usepackage{setspace}
 \usepackage{tikz}
+\usepackage{times}
 \usetikzlibrary{arrows}
 \usetikzlibrary{matrix}
 \usepackage[margin=3cm]{geometry}
@@ -26,7 +29,7 @@
 \long\def\cps590header{\begin{center}
 \large\bf CPS 430/590.06 \hfill Prof.\ John Reif\\
 \large\bf Design and Analysis of Algorithms \hfill Fall 2013 \\
-\large\bf Project Abstract \hfill Matt Dickenson
+\large\bf Final Project \hfill Matt Dickenson
 \end{center}}
 
 \headsep 10pt
@@ -35,26 +38,126 @@
 
 \cps590header
 
-\paragraph{Project Title:} Machine Learning Algorithms with Application to Political Event Data
+\vspace{1in}
+\begin{center}
+\textbf{Machine Learning Algorithms with Application to Political Event Data}
+\end{center}
 
-\paragraph{Project Description} This project will analyze two machine learning algorithms and discuss their application to automated processing of political event data. The first algorithm, Hidden Markov Modeling (HMM), uses observed data to make inferences about an unobserved latent state. The second method, Hierarchical Association Rule Modeling (HARM) selects a subset of decision rules from a set of candidates to classify observations categorically. Applying machine learning to the classification of political event data can greatly reduce the cost in human effort, time, and money. 
+\vspace{1in}
+\paragraph{Abstract} This project will analyze an algorithm and implementation of classification trees and discuss their application to automated processing of political event data. Applying machine learning to the classification of political event data can greatly reduce the cost in human effort, time, and money. The motivation for this project is to update the Militarized Interstate Disputes (MID) dataset, which has been widely used in academic research and policy discussions. The MID project relies on humans reading journalistic accounts and manually entering the classification of the event according to a defined schema. This dependence on humans is both less accurate, less efficient, and more expensive than automated methods. The results of this analysis suggest that automated methods can provide a first-pass classification of political indicators at a huge savings of time and money, without sacrificing accuracy or interpretability. 
 
-The motivation for this project is to update the Militarized Interstate Disputes (MID) dataset, which has been widely used in academic research and policy discussions. The MID project relies on humans reading journalistic accounts and manually entering the classification of the event according to a defined schema \citep{gerner1994, grimmer2013}. This dependence on humans is both less accurate, less efficient, and more expensive than automated methods \citep{king2003automated, mikhaylov2012coder, ruggeri2011events}. The most recent version of MID data was released in 2004; an update through 2010 is delayed indefinitely and has cost millions of dollars.
 
-This project will explore whether HMM and HARM can help automate the processing of political event indicators to update the MID dataset. The final paper will include an analysis of the algorithms used for HMM and HARM, a comparison in cost and complexity to extant methods for processing event data, and preliminary results for automating the production of MID data.
+\pagebreak
+\doublespacing
 
+\section{Introduction} % introduce the problem and the algorithm
+
+Can computational methods detect political and social upheaval through automated text processing and machine learning? If so, can this process be done with both statistical and computational efficiency? This project seeks to answer these questions in one particular application area: international conflicts. In this section, we provide context for the relevance of this application and the methods under discussion. Section \ref{lit} discusses existing methods for predicting disputes, surveys the extent of machine learning within political science, and explains why classification trees are an appropriate method for this problem. Section \ref{complexity} analyzes the computational complexity of classification trees in general, and Section \ref{analysis} describes the implementation of classification trees used in this project. Section \ref{results} presents the statistical results and compares their efficiency to two related methods (generalized linear models and random forests). Section \ref{conclusion} concludes the paper with implications for future research. 
+
+% discuss MIDS: why it's important, who cares, and how it's done now
+
+\section{Previous Research} % lit review
+\label{lit}
+
+% What relevant approaches, feature sets, or kernels have they developed that might be useful in your own analysis? 
+
+As one of the most widely used dependent variables in international conflict studies, much effort has been devoted to estimating models of MID onset and duration. However, this work suffers from several common weaknesses that this project attempts to ameliorate: virtually all projects, especially before the present decade, used a fixed functional form (typically from the family of generalized linear models); out-of-sample testing and cross-validation is used only rarely, making claims of `prediction' somewhat dubious in many cases; and often the independent variables are measured at the annual level with high levels of serial correlation, meaning that there is little temporal variation in the predictors, while the dependent variable tends to exhibit more sudden onsets \citep{ward2010perils}. A recent shift toward event data has helped to address the latter two of these issues: with frequent updates (often measured at the daily level), there is substantial variation in the independent variables, validation requires only a brief waiting period for new sets of test data \citep{gerner1994,gerner:etal:2002,king2003automated,ruggeri2011events,schrodt2013gdelt}. 
+
+% What modeling approaches and simplifying assumptions worked in this related work, and what didn’t work? 
+With this transition toward event data as predictors, the political forecasting community has become attune to new challenges and has responded with several established practices. Coding the sentiment of interactions can now be done in near real-time (NRT) using the Tabari system, which aggregates and deduplicates news reports \citep{o2010crisis,schrodt2009tabari}. Sentiment coding can be done according to two widely used systems. The Goldstein scale assigns a score of -10 (highly conflictual) to +10 (highly cooperative) to events, but it is difficult to employ this scale for aggregations or permutations of the data \citep{goldstein1992conflict}. CAMEO classifies events into a pre-defined schema of material/verbal and cooperative/conflictual actions, that makes aggregation simpler because we can count events within each category \citep{gerner:etal:2002}. These event classifications provide a principled, automated method for exhaustively categorizing  the types of events that may consitute an interstate dispute \citep{ghosn2004mid3}.
+
+The community has also dealt with challenges when aggregating event data up to various temporal levels. Although there is no single best practice, monthly aggregation has become a common strategy \citep{arva2013improving,yonamine2013event} and is used in this project. Modfiying the features by transforming the raw counts into month-to-month changes (i.e. first-differencing) and measuring the balance between conflictual and cooperative interactions as a percentage of the total also helped to simplify the feature set \citep{Box:1976}. 
+
+% What can you take from the scientific literature to your project? 
+
+Interpretability is an important concern in this project due to the policy-relevant nature of the problem and the (potential) need to compare the resulting model to the process used by human coders involved in creating the MID dataset \citep{ghosn2004mid3}. For this reason, ``black box'' methods such as Support Vector Machines were judged to be inappropriate. Classification trees (and their continuous counterpart, regression trees, collectively known as CART) offer a nice alternative that is more flexible than GLMs and more interpretable than Random Forests (these two methods should provide lower and upper bounds, respectively, on CART) \citep{klebanov2008lexical}. CART has been used for event data within conflict studies, and in public health where researchers encounter similar issues of unbalanced and missing data \citep{schrodt1990predicting,speybroeck2012classification,trappl1996digging}.
+
+In later stages of this project, several additional tools may help to improve the predictive accuracy of the model. International conflict is a relatively rare event, meaning that in $k$-fold cross validation it is possible that some subsets will have no instances of conflict; to prevent this, synthetic minority over-sampling (SMOTE) could be used \citep{chawla2002smote}. To incorporate interdependencies not captured at the dyadic level, future iterations could also include lags that measure conflict in social or spatial neighbors \citep{gleditsch2000war,gleditsch2001measuring,hoff2004modeling,ward1998democratizing,ward2007disputes,ward2011network}. A Bayesian ensemble model of several classification trees could also improve performance while still maintaining more interpretability than is available in random forests \citep{arva2013improving,montgomery2012improving,Raftery:1995,raftery2005using}. If these methods are successful, the general processing of automating political indicators through the use of event data could also be applied to other widely used indices such as the Polity and Freedom House regime scales (measuring democracy and autocracy). 
+
+
+\section{Computational Complexity of Classification Trees}
+\label{complexity}
+
+
+
+\section{Statistical Analyis}
+\label{analysis}
+
+\subsection{Problem Definition and Data Sources}
+% Summarize your data, describing the problem you are attempting to solve (e.g., prediction, classification). 
+
+The problem that this project attempts to solve is the classification of country dyad months (e.g. \texttt{USA-China-2012-May}) as either in conflict or not. To achieve this, we will use real time (daily) event data from the Global Database of Events, Language, and Tone (GDELT), aggregated up to the dyad month level for 1992-present \citep{schrodt2013gdelt}. To measure the dependent variable of conflict, the Militarized Interstate Disputes (MID) dataset will be split into subsets for training and validation \citep{ghosn2004mid3}. The goal of this project is to replicate and extend MID data coding as accurately as possible using automated procedures. If a reliable method can be developed to replicate the MID data up to 2001, it can then be extended to generate data for interstate disputes since 2001. 
+
+
+\subsection{Features of the Data}
+% Describe the features that you will use from your data to solve this problem. 
+
+In work on this project thus far, several important features of the GDELT data have been identified. All events in GDELT are classified according to the CAMEO coding scheme \citep{gerner:etal:2002}. Within this scheme, there are two major distinctions along two dimensions: acts can be material or verbal, and interactions can be cooperative or conflictual. These four categories provide a rough characterization of how two countries interact within a given period of time. More fine-grain classification, into twenty subcategories, is also provided. Examples of these categories are presented in Table \ref{cameo}.
+% Cite cameo
+
+\begin{table}[t]
+\caption{CAMEO event categories and descriptions}
+\label{cameo}
+\begin{center}
+\begin{tabular}{lp{2in}p{2in}}
+& \textbf{Cooperative} & \textbf{Conflictual} \\
+\midrule
+\textbf{Verbal} & public statement, appeal, express intent to cooperate, consult, engage in diplomatic cooperation & demand, disapprove, reject, threaten, protest \\
+\textbf{Material} & cooperate materially, provide aid, yield, investigate & exhibit fore posture, reduce relations, coerce, assault, fight, use conventional mass violence
+\end{tabular}
+\end{center}
+\end{table}
+
+During the process of aggregating GDELT records into dyad months, the absolute number of events within each of the four major and twenty minor categories was counted. From these raw counts, the monthly change in counts and percentages, as well as the relative frequency of each interaction type was computed. These features--proportion of interactions that were conflictual versus cooperative, and how sharply events changed from the previous month--will be used as predictors for the classification procedure. 
+
+\subsection{Model}
+
+% Present your mathematical model in a rigorous and clear way with equations when necessary. 
+
+% Please specify the random variables and parameters in your model (for example, xi ∈ R are real-valued and yj are categorical variables), and 
+
+
+The mathematical model for this project is that a binary indicator of conflict, $y$, between country $i$ and country $j$ at time $t$ is a function of observed interactions between them in month $t$. Formally, 
+\begin{eqnarray*}
+\hat{y}_{i,j,t}|x &=& f(\Delta x_{i,j,t} + z_{i,j,t})
+\end{eqnarray*}
+
+The conflict indicators $y_{i,j,t}$ are binary $(0,1)$. The observations $x_{i,j,t}$ consist of the month-to-month change in interactions between $i$ and $j$ within each of the event categories described above ($\Delta x_{i,j,t} = x_{i,j,t} - x_{i,j,t-1}$). Thus, $x$ is a count variable that can take on positive or negative values ($x \in \mathbb{Z}$). The observations $z_{i,j,t}$ measure the relative frequency of conflictual interactions as a percentage of the total $n$ observations for the dyad-month: 
+\begin{eqnarray*}
+z_{i,j,t} = {\sum_{k=1}^n x_{i,j,t,k} \mathbb{I}(\text{conflictual})  \over \sum_{k=1}^n x_{i,j,t-1,k} }.
+\end{eqnarray*}
+
+% provide interpretations for these variables (i.e., which are observed, which are hidden, and which you will be estimating, and how each of the observed values will be processed from the original data). 
+
+Both the $x$ and $z$ values are observed in the GDELT data. The indicator of conflict, $y$, is observed in the MID data, and predicted indicators of conflict $\hat{y}$ will be estimated. The predicted values $\hat{y}$ for the test set can be compared to the actual MID data to assess how well the model works out-of-sample. This will give us a sense of how accurate the classifications for post-2001 data will be. Even though these values will not be perfectly accurate, they should give us a good approximation of which countries experienced conflict since 2001 and can help speed up the production of the next generation of MID data. 
+
+\subsection{Machine Learning Method}
+
+% In three sentences, describe the inference problem and what methods you will use for this task.
+
+The inference problem is to compute a function $f(\cdot)$ that maps country interactions to estimate an indicator of whether conflict occurred. To accomplish this, this project will use a support vector machine (SVM). This method is appropriate for binary classification with real-valued predictors, which makes it well suited for this project.
+
+\section{Results}
+\label{results}
+
+
+\section{Conclusion}
+\label{conclusion}
+
+% \citep{gerner1994, grimmer2013} current method of mids
+% \citep{king2003automated, mikhaylov2012coder, ruggeri2011events} cost effectiveness of automation
 
 % in paper:
 % discuss human-intensive methods of coding in terms of their algorithmic complexity and costs
 % discuss HMM and HARM
 % present preliminary results from gdelt -> mids
 
-% \pagebreak
-% \onehalfspacing
-% \singlespacing
-% \setcitestyle{authordate,round,semicolon,aysep={,},yysep={,}}
-% \bibpunct[:]{(}{)}{;}{a}{,}{,}
-\renewcommand{\bibsection}{\paragraph{References}}
+
+
+
+% \renewcommand{\bibsection}{\paragraph{References}}
+\pagebreak
+\singlespacing
 \setlength{\bibsep}{0.0pt}
 \bibliographystyle{/Users/mcdickenson/Documents/Templates/chicago}
 \bibliography{/Users/mcdickenson/Documents/Templates/RefLib.bib}
