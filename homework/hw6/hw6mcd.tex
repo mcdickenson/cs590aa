@@ -87,6 +87,16 @@ Pr(k \text{successes}) = \frac{1}{k} \sum_{i=1}^{k} C^i Pr(k-i \text{ successes}
 \item Thus, if $P=NP$, an adversary can break RSA encryption. 
 \end{enumerate}
 
+\begin{answer}{3}
+% A kite is a graph on an even number of vertices, say 2n, in which n of the vertices form a clique and the remaining n vertices are connected in a "tail" that consists of a path joined to one of the vertices of the clique. Given a graph and a goal g, the KITE problem asks for a subgraph which is a kite and which contains 2g nodes. Prove that KITE is NP-complete.
+
+Recall from class that $CLIQUE$ is $NP$-complete. For $KITE$, we wish to find a clique of size $g$ connected to a tail, also of size $g$. 
+
+If we are given a graph $G=\{V,E\}$ and asked to perform $CLIQUE$, we could reduce this problem to $KITE$. We could do this by adding tails of size $g$ to all $v \in V$. Then, the kite we find would consist of a clique plus a tail. 
+
+Finding a polynomial-time solution to $KITE$ would imply a polynomial-time solution to $CLIQUE$.Because $CLIQUE$ is $NP$-complete and can be reduced to $KITE$, $KITE$ must also be $NP$-complete. 
+\end{answer}
+
 
 \end{answer}
 
