@@ -59,7 +59,7 @@ One (inefficient) way to go about this is to iterate over all of the possible su
 \begin{eqnarray*}
 Pr(k \text{successes}) = \sum_{s \in S} \prod_{i \in s_a} p_i \prod_{j \in s_b} (1-p_j)
 \end{eqnarray*}
-However, there are $(n \choose k)={n! \over k!(n-k)!}$ elements in $S$, which is quite large and makes this algorithm inefficient.
+However, there are ${n \choose k}={n! \over k!(n-k)!}$ elements in $S$, which is quite large and makes this algorithm inefficient.
 
 A more efficient approach uses recursion, alternating between addition and subtraction to avoid double-counting. Again, if $k>n$, we return zero. The base case of the recursion is $k=0$, in which case we return the product of all failure probabilities, $\prod_j=1^n (1-p_j$. For $0<k<=n$, 
 \begin{eqnarray*}
@@ -73,9 +73,22 @@ Pr(k \text{successes}) = \frac{1}{k} \sum_{i=1}^{k} C^i Pr(k-i \text{ successes}
 
  We are then left with a sum of size $k$ and $k+1$ recursive calls. Using $n$ as an upper bound on $k$, this is $O(n \times n + n)=O(n^2)$, as desired. 
 
-
 \end{answer}
 
+\begin{answer}{2}
+% Show that if P = NP then the RSA cryptosystem can be broken in polynomial time.
+
+\begin{enumerate}
+\item Assume $P=NP$. 
+\item The factorization of large numbers, $F(n)$, can be verified in polynomial time, that is $F(n) \in NP$. $P=NP$ implies $F(n) \in P$. 
+\item Suppose an adversary initially has the public key function $P(M)=M^e mod n$ for the message $M$, but not the secret key $S(C)=C^d mod n$ or the value of $n$. $S(P(M))=M=(P(S(M))$. 
+\item If $F(n) \in P$ then $n$ can be factorized in polynomial time. Because $e$ and $d$ are small primes, the adversary can find $S(C)$ by trial and error (iteration) in polynomial time. 
+\item Because $S(C)$ can be computed in polynomial time, the adversary can use the encrypted transmission $P(M)$ to compute $M=S(P(M))$. 
+\item Thus, if $P=NP$, an adversary can break RSA encryption. 
+\end{enumerate}
+
+
+\end{answer}
 
 
 \end{document}
