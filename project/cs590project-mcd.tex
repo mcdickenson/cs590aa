@@ -57,15 +57,33 @@
 
 Can computational methods detect political and social upheaval through automated text processing and machine learning? If so, can this process be done with both statistical and computational efficiency? This project seeks to answer these questions in one particular application area: international conflicts. In this section, we provide context for the relevance of this application and the methods under discussion. Section \ref{lit} discusses existing methods for predicting disputes, surveys the extent of machine learning within political science, and explains why classification trees are an appropriate method for this problem. Section \ref{complexity} analyzes the computational complexity of classification trees in general, and Section \ref{analysis} describes the implementation of classification trees used in this project. Section \ref{results} presents the statistical results and compares their efficiency to generalized linear models. Section \ref{conclusion} concludes the paper with implications for future research. 
 
-% discuss MIDS: why it's important, who cares, and how it's done now
-% \citep{gerner1994, grimmer2013} current method of mids
-% \citep{king2003automated, mikhaylov2012coder, ruggeri2011events} cost effectiveness of automation
-% discuss human-intensive methods of coding in terms of their algorithmic complexity and costs
-
-
-
 \section{Background and Motivation} % lit review
 \label{lit}
+
+\subsection{Production of MID Data}
+
+The current production of the Militarized Interstate Disputes (MID) dataset is overseen by the Correlates of War Project, headquartered at Penn State University. The most recent version of the data set, MID 3.0, was released in 2003 with coverage through 2001. An update was expected during the summer of 2012, but has been delayed indefinitely. The time-intensive nature of the current MIDS production pipeline inevitably delays important scholarly research on the nature of interstate conflict. 
+
+A ``militarized incident is defined as a single military action involving an explicit threat, display, or use of force by one system member state towards another system member state.'' These incidents form the basis of a dispute in the data set. The current ``algorithm'' for producing MID data updates is as follows \citep{ghosn2004mid3}:
+
+\begin{enumerate}
+\item Search the Lexis-Nexis database for news articles mentioning possible militarized incidents. An event classifies as a militarized interstate incident if it:
+	\begin{itemize}
+		\item occurs among two or more interstate system members;
+		\item is an overt action taken by the official military forces or government representatives of a state; and
+		\item involves the threat, display, or use of forces.
+	\end{itemize}
+\item Human coders assigned to a specific geographical region read news articles and list all possible militarized incidents.
+\item Principal invesigators classify incidents as ``OK'' or ``under revision.'' More precise information (e.g. exact start date of a conflict) is sought for incidents in the latter category.
+\item Events from different regions are aggregated into the final dataset. 
+\end{enumerate}
+
+For the most recent update, this process took about three years. By contrast, a single run of a classification tree like the one used in the paper takes less than ten minutes. 
+
+% decision trees can imitate the human thought process while maintaining interpretability 
+Decision trees can help to imitate this human thought process, but with obvious advantages in scale and speed \citep{king2003automated, mikhaylov2012coder, ruggeri2011events}. Furthermore, automated methods follow their decision rules perfectly, without falling prey to accidental errors of human classifiers. These trees also maintain interpretability relative to other ``black-box'' machine learning methods, meaning that a well-defined tree could be incorporated into a production pipeline that also includes human classifiers. For all of these reasons, classification trees are worth exploring in this project. 
+
+\subsection{Previous Research}
 
 As one of the most widely used dependent variables in international conflict studies, much effort has been devoted to estimating models of MID onset and duration. However, this work suffers from several common weaknesses that this project attempts to ameliorate: virtually all projects, especially before the present decade, used a fixed functional form (typically from the family of generalized linear models); out-of-sample testing and cross-validation is used only rarely, making claims of `prediction' somewhat dubious in many cases; and often the independent variables are measured at the annual level with high levels of serial correlation, meaning that there is little temporal variation in the predictors, while the dependent variable tends to exhibit more sudden onsets \citep{ward2010perils}. A recent shift toward event data has helped to address the latter two of these issues: with frequent updates (often measured at the daily level), there is substantial variation in the independent variables, validation requires only a brief waiting period for new sets of test data \citep{gerner1994,gerner:etal:2002,king2003automated,ruggeri2011events,schrodt2013gdelt}. 
 
@@ -81,7 +99,32 @@ In later stages of this project, several additional tools may help to improve th
 \section{Computational Complexity of Classification Trees}
 \label{complexity}
 
-CART grows a tree $T$ from a root node by adding splits based on features. At each stage, there is an impurity function $I(T)$ that measures the (in)accuracy of the existing classifications. When adding another split to the tree, the CART algorithm seeks to maximize the impurity reduction $\Delta I$. The measure of impurity reduction is supplied to the algorithm, as is a complexity parameter, $\kappa$. We can think of $\kappa$ as the cost of adding another variable to the tree. When $\kappa=\infty$ the tree will consist of only the root node, and as we reduce $\kappa$ toward zero we allow the tree to grow. However, setting $\kappa$ too low can result in overfitting, which can be assessed via cross-validation. For more on classification trees in general and the implementation used for this project, see \citep{murphy2012machine,olshen1984classification,therneau1997introduction}. 
+A classification tree provides a set of decision nodes used to assign observations to one or more categories based on features of the observation. We wish to build a tree that minimizes classification error. The problem of finding the optimal tree is NP-complete \citep{mohri2012foundations}. However, we can use a greedy algorithm to grow the tree iteratively, starting at the root. 
+
+A schematic tree consists of a node that \emph{splits} the data based on a \emph{test}. Values satisfying the test are classified into the left subtree, while values failing the test are assigned to the right subtree. Once an observation reaches a leaf node, it is classified probabilistically based on the preponderance of observations assigned to that leaf. 
+
+\begin{figure}
+  \begin{center}
+    \includegraphics{../graphics/tree-schematic.png}
+    \caption{A Schematic of a Classification Tree (adapted from Latkowski, 2003)}
+    \label{tree}
+  \end{center}
+\end{figure}
+
+CART greedily grows a tree $T$ from a root node by adding splits based on features. At each stage, there is an impurity function $I(T)$ that measures the (in)accuracy of the existing classifications. When adding another split to the tree, the CART algorithm seeks to maximize the impurity reduction $\Delta I$. The measure of impurity reduction is supplied to the algorithm, as is a complexity parameter, $\kappa$. We can think of $\kappa$ as the cost of adding another variable to the tree. When $\kappa=\infty$ the tree will consist of only the root node, and as we reduce $\kappa$ toward zero we allow the tree to grow. However, setting $\kappa$ too low can result in overfitting, which can be assessed via cross-validation. For more on classification trees in general and the implementation used for this project, see \citep{murphy2012machine,olshen1984classification,therneau1997introduction}. For $n$ observations, classification is at least as complex as sorting, giving us a lower bound of $\Theta(n \log n)$. Careful implementation with greedy algorithms can reach $\Omega(n \log n)$ \citep{latkowski2003high}. 
+
+Given a set of features $H$, a cost function $I(T)$, and a minimum complexity $\kappa$, the greedy top-down tree-building algorithm at is as follows:
+
+\begin{enumerate}
+  \item Initialize the empty tree, $T_0$
+  \item Until $\Delta I \leq kappa$:
+  \begin{enumerate}
+  	\item Given $T_{i-1}$, choose the leaf $l$ and feature test $h \in H$ that maximizes $\Delta I$
+  	\item Replace leaf $l$ in $T_i$ with the new subtree created by test $h$
+  \end{enumerate}
+\end{enumerate}
+
+Pruning is a bottom up procedure that replaces nodes with leaves, minimizes the error in another data set (not the one used to train the tree). This second data set can be an entirely new test set or a bootstrapped version of the original training set. Pruning is generally exponential, but this can be reduced using dyanmic programming. Starting with the errors at each leave, we prune backwards until we reach a threshold (provided as input) for the maximum number of errors, $e$. This gives us the simplest tree possible that makes no more than $e$ errors. For data input of size $n$ and tree size $|T|$, greedy pruning can be done in $O(n^2 |T|)$. Having seen how classification trees perform in theory and their computational efficiency, we now turn to an applied case to examine their statistical efficiency and accuracy.
 
 
 \section{Applied Analyis}
@@ -135,7 +178,11 @@ The other splits are less surprising. Demands (node four) are likely to be more 
 
 \subsection{Model Diagnostics}
 
-How does the tree perform relative to other classification models? Table \ref{cart-perf} compares the tree above to a null model (all observations are predicted to be peaceful) and a logistic regression using the same features as the CART model. The data was split into two parts, a training set for fitting the models, and a test set for out-of-sample comparison. This prevents a model that overfits the data from appearing superior to one with more generality. The classification tree outperforms the other two models in the training data (1992-1998, $n=372,271$). For the test data (1999-2001, $n=213,218$), the tree has the same mean-squared error (MSE) as the null model, but better precision and recall. Compared to logistic regression, the tree has worse recall but much better precision for the test data. This suggests that the classification tree generated more false negatives (i.e. missed the occurrence of some conflicts) in the test data.
+How does the tree perform relative to other classification models? Table \ref{cart-perf} compares the tree above to a null model (all observations are predicted to be peaceful) and a logistic regression using the same features as the CART model. The data was split into two parts, a training set for fitting the models, and a test set for out-of-sample comparison. This prevents a model that overfits the data from appearing superior to one with more generality. 
+
+Mean-squared error is the average squared deviation of predictions from the observed values. It is calculated as $MSE=\frac{1}{n}\sum_{i=1}^n (y_i - \hat{y}_i)^2$. The ideal MSE is zero, and in this case the worst possible value is 1. In the case of binary classification, this is equal to the misclassification rate. Precision and recall are particularly useful metrics for rare events, as they penalize the model for making incorrect prediction. The ideal for both is a value of 1. Precision is calculated as the proportion of true positives relative to the number of true and false positives (i.e. $\# \text{accurate predictions of war} \over \text{\# total predictions of war}$). Recall is similar, but for the proportion of true positives relative to the number of true positives and false negatives (i.e. $\# \text{accurate predictions of war} \over \text{\# total observed cases of war}$).
+
+The classification tree outperforms the other two models in the training data (1992-1998, $n=372,271$). For the test data (1999-2001, $n=213,218$), the tree has the same mean-squared error (MSE) as the null model, but better precision and recall. Compared to logistic regression, the tree has worse recall but much better precision for the test data. This suggests that the classification tree generated more false negatives (i.e. missed the occurrence of some conflicts) in the test data.
 
 \begin{table}
 	\caption{Comparison of CART to Alternative Models}
@@ -155,6 +202,14 @@ How does the tree perform relative to other classification models? Table \ref{ca
 
 \section{Conclusion}
 \label{conclusion}
+
+Classification trees strike a nice balance between computational and statistical efficiency. The computational complexity of greedy tree-building is $\Omega(n \log n)$, which is the best that can be hoped for. Statistically, CART outperforms logisitic regression using a generalized linear model (GLM). In the application here, this is likely because the classification tree handled dependencies between features better than the linear model. 
+
+The interpretation of the tree suggests that it fits the 1990s very well, but may perform less well in the future. Perhaps an ensemble of trees based on a few months of data at a time (with the addition of more trees as the data extend in to the future) would perform better and account for changes in the data generating process over time. A Bayesian ensemble of several classification trees could improve performance while still maintaining more interpretability than is available in random forests \citep{arva2013improving,montgomery2012improving,Raftery:1995,raftery2005using}.
+
+Other adjustments can also help to refine the model at later stages. International conflict is a relatively rare event, meaning that in $k$-fold cross validation it is possible that some subsets will have no instances of conflict; to prevent this, synthetic minority over-sampling (SMOTE) could be used \citep{chawla2002smote}. To incorporate interdependencies not captured at the dyadic level, future iterations could also include lags that measure conflict in social or spatial neighbors \citep{gleditsch2000war,gleditsch2001measuring,hoff2004modeling,ward1998democratizing,ward2007disputes,ward2011network}.
+
+The findings thus far indicate that automated production of political indicators is feasible to within a close approximation. The application of classification trees offers a quick and inexpensive tool that can save much human effort. A final pass by human coders will still be required to obtain fully accurate classifications, but the cost can be substantially reduced. With the additional steps proposed above, the process of automating political indicators using event data could also be applied to other widely used indices such as the Polity and Freedom House regime scales (measuring democracy and autocracy).
 
 
 
