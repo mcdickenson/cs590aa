@@ -1,0 +1,81 @@
+\documentclass[12pt,letterpaper]{article}
+\usepackage{amsmath,amsthm,amsfonts,amssymb,amscd}
+\usepackage{fullpage}
+\usepackage{lastpage}
+\usepackage{enumerate}
+\usepackage{fancyhdr}
+\usepackage{listings}
+\lstset{
+	numbers=left,
+	numbersep=5pt,
+	stepnumber=1,
+	tabsize=2,
+	showstringspaces=false
+}
+\usepackage{mathrsfs}
+\usepackage{mathtools}
+\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+\usetikzlibrary{matrix}
+\usepackage[margin=3cm]{geometry}
+\setlength{\parindent}{0.0in}
+\setlength{\parskip}{0.05in}
+
+\usepackage{../compsci430}
+
+
+\newenvironment{answer}[1]{
+  \subsubsection*{Question #1}
+}
+
+
+\long\def\cps590header{\begin{center}
+\large\bf CPS 430/590.06 \hfill Prof.\ John Reif\\
+\large\bf Design and Analysis of Algorithms \hfill Fall 2013 \\
+\large\bf Homework 6 \hfill Matt Dickenson
+\end{center}}
+
+\headsep 10pt
+
+\begin{document}
+
+\cps590header
+
+% DUE DECEMBER 4
+
+% 1. describe algorithm
+% 2. calculate complexity
+% 3. proof of correctness
+
+
+\begin{answer}{1}
+% Counting heads: Given integer n and k, along with p1...pn ∈ [0, 1], you want to determine the probability of obtaining exactly k heads when n biased coins are tossed independently at random, where pi is the probability that the ith coin comes up heads. Give an O(n2) algorithm for this task. Assume you can multiply and add two numbers in [0, 1] in O(1) time.
+
+Given a vector of probabilities $p$ of length $n$, we wish to compute the probability of $k$ successes in $n$ trials, with probability of success $i$ in the $i^{th}$ trial. Obviously if $k>n$, the probability is zero. 
+
+One (inefficient) way to go about this is to iterate over all of the possible subsets $S$ of $n$ that could offer $k$ successes and $n-k$ failures. For each of those subsets $s \in S$, we can multiply the probabilities of the successes ($s_a$), $\prod_{i \in s_a} p_i$, and the complements of the probabilities for the failures ($s_b$), $\prod_{j \in s_b} (1-p_j)$. This gives us the formula
+\begin{eqnarray*}
+Pr(k \text{successes}) = \sum_{s \in S} \prod_{i \in s_a} p_i \prod_{j \in s_b} (1-p_j)
+\end{eqnarray*}
+However, there are $(n \choose k)={n! \over k!(n-k)!}$ elements in $S$, which is quite large and makes this algorithm inefficient.
+
+A more efficient approach uses recursion, alternating between addition and subtraction to avoid double-counting. Again, if $k>n$, we return zero. The base case of the recursion is $k=0$, in which case we return the product of all failure probabilities, $\prod_j=1^n (1-p_j$. For $0<k<=n$, 
+\begin{eqnarray*}
+Pr(k \text{successes}) = \frac{1}{k} \sum_{i=1}^{k} \sum_{j=1}^n ({p_j \over 1-p_j})^i Pr(k-i \text{ successes}) (-1)^{i-1}
+\end{eqnarray*}
+
+Notice that the inner term $\sum_{j=1}^n (p_j \over 1-p_j)=C$ is constant for a given problem, so we can compute it once at the beginning:
+\begin{eqnarray*}
+Pr(k \text{successes}) = \frac{1}{k} \sum_{i=1}^{k} C^i Pr(k-i \text{ successes}) (-1)^{i-1}
+\end{eqnarray*}
+
+ We are then left with a sum of size $k$ and $k+1$ recursive calls. Using $n$ as an upper bound on $k$, this is $O(n \times n + n)=O(n^2)$, as desired. 
+
+
+\end{answer}
+
+
+
+\end{document}
