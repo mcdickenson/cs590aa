@@ -4,6 +4,7 @@
 \usepackage{fullpage}
 \usepackage{lastpage}
 \usepackage{enumerate}
+\usepackage[nofiglist, notablist]{endfloat}
 \usepackage{fancyhdr}
 \usepackage{hyperref}
 \usepackage{mathrsfs}
@@ -11,7 +12,7 @@
 \usepackage{xcolor}
 \usepackage{setspace}
 \usepackage{tikz}
-\usepackage{times}
+% \usepackage{times}
 \usetikzlibrary{arrows}
 \usetikzlibrary{matrix}
 \usepackage[margin=3cm]{geometry}
@@ -19,6 +20,8 @@
 \setlength{\parskip}{0.05in}
 
 \usepackage{compsci430}
+
+\setlength{\parindent}{0.5in}
 
 
 \newenvironment{answer}[1]{
@@ -44,7 +47,7 @@
 \end{center}
 
 \vspace{1in}
-\paragraph{Abstract} This project will analyze an algorithm and implementation of classification trees and discuss their application to automated processing of political event data. Applying machine learning to the classification of political event data can greatly reduce the cost in human effort, time, and money. The motivation for this project is to update the Militarized Interstate Disputes (MID) dataset, which has been widely used in academic research and policy discussions. The MID project relies on humans reading journalistic accounts and manually entering the classification of the event according to a defined schema. This dependence on humans is both less accurate, less efficient, and more expensive than automated methods. The results of this analysis suggest that automated methods can provide a first-pass classification of political indicators at a huge savings of time and money, without sacrificing accuracy or interpretability. 
+\paragraph{Abstract} How do computational and statistical efficiency interact, and what are the trade-offs between them? In the era of ``big data'' this question has become increasingly relevant. This project explores that question in the context of a particular machine learning algorithm (classification trees) and a particular problem (automated processing of political indicators). Applying machine learning to the classification of political event data can greatly reduce the cost in human effort, time, and money. The motivation for this project is to update the Militarized Interstate Disputes (MID) dataset, which has been widely used in academic research and policy discussions. The MID project relies on humans reading journalistic accounts and manually entering the classification of the event according to a defined schema. This dependence on humans is both less accurate, less efficient, and more expensive than automated methods. The results of this analysis suggest that automated methods can provide a first-pass classification of political indicators at a huge savings of time and money, without sacrificing accuracy or interpretability. 
 
 
 \pagebreak
@@ -52,23 +55,23 @@
 
 \section{Introduction} % introduce the problem and the algorithm
 
-Can computational methods detect political and social upheaval through automated text processing and machine learning? If so, can this process be done with both statistical and computational efficiency? This project seeks to answer these questions in one particular application area: international conflicts. In this section, we provide context for the relevance of this application and the methods under discussion. Section \ref{lit} discusses existing methods for predicting disputes, surveys the extent of machine learning within political science, and explains why classification trees are an appropriate method for this problem. Section \ref{complexity} analyzes the computational complexity of classification trees in general, and Section \ref{analysis} describes the implementation of classification trees used in this project. Section \ref{results} presents the statistical results and compares their efficiency to two related methods (generalized linear models and random forests). Section \ref{conclusion} concludes the paper with implications for future research. 
+Can computational methods detect political and social upheaval through automated text processing and machine learning? If so, can this process be done with both statistical and computational efficiency? This project seeks to answer these questions in one particular application area: international conflicts. In this section, we provide context for the relevance of this application and the methods under discussion. Section \ref{lit} discusses existing methods for predicting disputes, surveys the extent of machine learning within political science, and explains why classification trees are an appropriate method for this problem. Section \ref{complexity} analyzes the computational complexity of classification trees in general, and Section \ref{analysis} describes the implementation of classification trees used in this project. Section \ref{results} presents the statistical results and compares their efficiency to generalized linear models. Section \ref{conclusion} concludes the paper with implications for future research. 
 
 % discuss MIDS: why it's important, who cares, and how it's done now
+% \citep{gerner1994, grimmer2013} current method of mids
+% \citep{king2003automated, mikhaylov2012coder, ruggeri2011events} cost effectiveness of automation
+% discuss human-intensive methods of coding in terms of their algorithmic complexity and costs
 
-\section{Previous Research} % lit review
+
+
+\section{Background and Motivation} % lit review
 \label{lit}
-
-% What relevant approaches, feature sets, or kernels have they developed that might be useful in your own analysis? 
 
 As one of the most widely used dependent variables in international conflict studies, much effort has been devoted to estimating models of MID onset and duration. However, this work suffers from several common weaknesses that this project attempts to ameliorate: virtually all projects, especially before the present decade, used a fixed functional form (typically from the family of generalized linear models); out-of-sample testing and cross-validation is used only rarely, making claims of `prediction' somewhat dubious in many cases; and often the independent variables are measured at the annual level with high levels of serial correlation, meaning that there is little temporal variation in the predictors, while the dependent variable tends to exhibit more sudden onsets \citep{ward2010perils}. A recent shift toward event data has helped to address the latter two of these issues: with frequent updates (often measured at the daily level), there is substantial variation in the independent variables, validation requires only a brief waiting period for new sets of test data \citep{gerner1994,gerner:etal:2002,king2003automated,ruggeri2011events,schrodt2013gdelt}. 
 
-% What modeling approaches and simplifying assumptions worked in this related work, and what didn’t work? 
 With this transition toward event data as predictors, the political forecasting community has become attune to new challenges and has responded with several established practices. Coding the sentiment of interactions can now be done in near real-time (NRT) using the Tabari system, which aggregates and deduplicates news reports \citep{o2010crisis,schrodt2009tabari}. Sentiment coding can be done according to two widely used systems. The Goldstein scale assigns a score of -10 (highly conflictual) to +10 (highly cooperative) to events, but it is difficult to employ this scale for aggregations or permutations of the data \citep{goldstein1992conflict}. CAMEO classifies events into a pre-defined schema of material/verbal and cooperative/conflictual actions, that makes aggregation simpler because we can count events within each category \citep{gerner:etal:2002}. These event classifications provide a principled, automated method for exhaustively categorizing  the types of events that may consitute an interstate dispute \citep{ghosn2004mid3}.
 
 The community has also dealt with challenges when aggregating event data up to various temporal levels. Although there is no single best practice, monthly aggregation has become a common strategy \citep{arva2013improving,yonamine2013event} and is used in this project. Modfiying the features by transforming the raw counts into month-to-month changes (i.e. first-differencing) and measuring the balance between conflictual and cooperative interactions as a percentage of the total also helped to simplify the feature set \citep{Box:1976}. 
-
-% What can you take from the scientific literature to your project? 
 
 Interpretability is an important concern in this project due to the policy-relevant nature of the problem and the (potential) need to compare the resulting model to the process used by human coders involved in creating the MID dataset \citep{ghosn2004mid3}. For this reason, ``black box'' methods such as Support Vector Machines were judged to be inappropriate. Classification trees (and their continuous counterpart, regression trees, collectively known as CART) offer a nice alternative that is more flexible than GLMs and more interpretable than Random Forests (these two methods should provide lower and upper bounds, respectively, on CART) \citep{klebanov2008lexical}. CART has been used for event data within conflict studies, and in public health where researchers encounter similar issues of unbalanced and missing data \citep{schrodt1990predicting,speybroeck2012classification,trappl1996digging}.
 
@@ -78,80 +81,80 @@ In later stages of this project, several additional tools may help to improve th
 \section{Computational Complexity of Classification Trees}
 \label{complexity}
 
+CART grows a tree $T$ from a root node by adding splits based on features. At each stage, there is an impurity function $I(T)$ that measures the (in)accuracy of the existing classifications. When adding another split to the tree, the CART algorithm seeks to maximize the impurity reduction $\Delta I$. The measure of impurity reduction is supplied to the algorithm, as is a complexity parameter, $\kappa$. We can think of $\kappa$ as the cost of adding another variable to the tree. When $\kappa=\infty$ the tree will consist of only the root node, and as we reduce $\kappa$ toward zero we allow the tree to grow. However, setting $\kappa$ too low can result in overfitting, which can be assessed via cross-validation. For more on classification trees in general and the implementation used for this project, see \citep{murphy2012machine,olshen1984classification,therneau1997introduction}. 
 
 
-\section{Statistical Analyis}
+\section{Applied Analyis}
 \label{analysis}
 
 \subsection{Problem Definition and Data Sources}
-% Summarize your data, describing the problem you are attempting to solve (e.g., prediction, classification). 
 
-The problem that this project attempts to solve is the classification of country dyad months (e.g. \texttt{USA-China-2012-May}) as either in conflict or not. To achieve this, we will use real time (daily) event data from the Global Database of Events, Language, and Tone (GDELT), aggregated up to the dyad month level for 1992-present \citep{schrodt2013gdelt}. To measure the dependent variable of conflict, the Militarized Interstate Disputes (MID) dataset will be split into subsets for training and validation \citep{ghosn2004mid3}. The goal of this project is to replicate and extend MID data coding as accurately as possible using automated procedures. If a reliable method can be developed to replicate the MID data up to 2001, it can then be extended to generate data for interstate disputes since 2001. 
+The classification tree attempts to categorize country dyad months (e.g. \texttt{USA-China-2012-May}) as either in conflict or not. To achieve this, we use real time (daily) event data from the Global Database of Events, Language, and Tone (GDELT), aggregated up to the dyad month level for 1992-present \citep{schrodt2013gdelt}. To measure the dependent variable of conflict, the Militarized Interstate Disputes (MID) dataset will be split into subsets for training and validation \citep{ghosn2004mid3}. The goal of this project is to replicate and extend MID data coding as accurately as possible using automated procedures. If a reliable method can be developed to replicate the MID data up to 2001, it can then be extended to generate data for interstate disputes since 2001. 
 
-
-\subsection{Features of the Data}
-% Describe the features that you will use from your data to solve this problem. 
-
-In work on this project thus far, several important features of the GDELT data have been identified. All events in GDELT are classified according to the CAMEO coding scheme \citep{gerner:etal:2002}. Within this scheme, there are two major distinctions along two dimensions: acts can be material or verbal, and interactions can be cooperative or conflictual. These four categories provide a rough characterization of how two countries interact within a given period of time. More fine-grain classification, into twenty subcategories, is also provided. Examples of these categories are presented in Table \ref{cameo}.
-% Cite cameo
-
-\begin{table}[t]
-\caption{CAMEO event categories and descriptions}
-\label{cameo}
-\begin{center}
-\begin{tabular}{lp{2in}p{2in}}
-& \textbf{Cooperative} & \textbf{Conflictual} \\
-\midrule
-\textbf{Verbal} & public statement, appeal, express intent to cooperate, consult, engage in diplomatic cooperation & demand, disapprove, reject, threaten, protest \\
-\textbf{Material} & cooperate materially, provide aid, yield, investigate & exhibit fore posture, reduce relations, coerce, assault, fight, use conventional mass violence
-\end{tabular}
-\end{center}
-\end{table}
+In work on this project thus far, several important features of the GDELT data have been identified. All events in GDELT are classified according to the CAMEO coding scheme \citep{gerner:etal:2002}. Within this scheme, there are two major distinctions along two dimensions: acts can be material or verbal, and interactions can be cooperative or conflictual. These four categories provide a rough characterization of how two countries interact within a given period of time. More fine-grain classification, into twenty subcategories, is also provided. Verbal cooperative events include public statements, appeals, expressions of intent to cooperate, consultations, and engaging in diplomatic cooperation. Materiale cooperation includes providing aid, yielding, and investigations. Verbal conflict includes demands, disapproval, rejections of offers, threats, and protests. Material conflict includes exhibiting force posture, reducing relations, coercion, assaults, fights, and the use of unconventional mass violence. These categories are mutually exclusive and exhaustive. 
 
 During the process of aggregating GDELT records into dyad months, the absolute number of events within each of the four major and twenty minor categories was counted. From these raw counts, the monthly change in counts and percentages, as well as the relative frequency of each interaction type was computed. These features--proportion of interactions that were conflictual versus cooperative, and how sharply events changed from the previous month--will be used as predictors for the classification procedure. 
 
+MID hostilities are measured on a five-point scale, which was collapsed into a binary with the cutoff set at four. Events above this threshold involve the use of force, typically associated with ``war,'' while events below this threshold require only the threat or display of force \citep{ghosn2004mid3}. Further classification of exact hostility levels will be attempted in a later stage of this project. 
+
 \subsection{Model}
 
-% Present your mathematical model in a rigorous and clear way with equations when necessary. 
-
-% Please specify the random variables and parameters in your model (for example, xi ∈ R are real-valued and yj are categorical variables), and 
-
-
-The mathematical model for this project is that a binary indicator of conflict, $y$, between country $i$ and country $j$ at time $t$ is a function of observed interactions between them in month $t$. Formally, 
-\begin{eqnarray*}
-\hat{y}_{i,j,t}|x &=& f(\Delta x_{i,j,t} + z_{i,j,t})
-\end{eqnarray*}
-
 The conflict indicators $y_{i,j,t}$ are binary $(0,1)$. The observations $x_{i,j,t}$ consist of the month-to-month change in interactions between $i$ and $j$ within each of the event categories described above ($\Delta x_{i,j,t} = x_{i,j,t} - x_{i,j,t-1}$). Thus, $x$ is a count variable that can take on positive or negative values ($x \in \mathbb{Z}$). The observations $z_{i,j,t}$ measure the relative frequency of conflictual interactions as a percentage of the total $n$ observations for the dyad-month: 
-\begin{eqnarray*}
-z_{i,j,t} = {\sum_{k=1}^n x_{i,j,t,k} \mathbb{I}(\text{conflictual})  \over \sum_{k=1}^n x_{i,j,t-1,k} }.
-\end{eqnarray*}
 
-% provide interpretations for these variables (i.e., which are observed, which are hidden, and which you will be estimating, and how each of the observed values will be processed from the original data). 
+The predictor values are observed in the GDELT data. The indicator of conflict, $y$, is observed in the MID data, and predicted indicators of conflict $\hat{y}$ will be estimated. The predicted values $\hat{y}$ for the test set can be compared to the actual MID data to assess how well the model works out-of-sample. This will give us a sense of how accurate the classifications for post-2001 data will be. Even though these values will not be perfectly accurate, they should give us a good approximation of which countries experienced conflict since 2001 and can help speed up the production of the next generation of MID data. A classification tree was fit to this data, with results presented in the next section.
 
-Both the $x$ and $z$ values are observed in the GDELT data. The indicator of conflict, $y$, is observed in the MID data, and predicted indicators of conflict $\hat{y}$ will be estimated. The predicted values $\hat{y}$ for the test set can be compared to the actual MID data to assess how well the model works out-of-sample. This will give us a sense of how accurate the classifications for post-2001 data will be. Even though these values will not be perfectly accurate, they should give us a good approximation of which countries experienced conflict since 2001 and can help speed up the production of the next generation of MID data. 
-
-\subsection{Machine Learning Method}
-
-% In three sentences, describe the inference problem and what methods you will use for this task.
-
-The inference problem is to compute a function $f(\cdot)$ that maps country interactions to estimate an indicator of whether conflict occurred. To accomplish this, this project will use a support vector machine (SVM). This method is appropriate for binary classification with real-valued predictors, which makes it well suited for this project.
 
 \section{Results}
 \label{results}
 
+To fit the classification tree, this project used the \texttt{rpart} library in $\mathcal{R}$ \citep{therneau1997introduction}. The minimum complexity parameter, $\kappa$, was initialized to be $10^{-4}$. By cross-validation, the optimal $\kappa$ was found to be 0.00155 (see Figure \ref{cpplot}). This value was used to prune the tree from its maximum of 176 splits down to nine. The resulting tree is shown in Figure \ref{tree}, with leaves shaded by whether MID hostilities (``war'') or peace is more likely. Each leaf also indicates the relative frequency of war in the training set for observations assigned to that leaf.
+
+\begin{figure}
+  \begin{center}
+    \input{../graphics/plotcp-full}
+    \caption{Cross-Validation Error and Number of Splits as a Function of $\kappa$}
+    \label{cpplot}
+  \end{center}
+\end{figure}
+
+\begin{figure}
+  \begin{center}
+    \input{../graphics/tree-for-paper}
+    \caption{Fitted and Pruned Classification Tree}
+    \label{tree}
+  \end{center}
+\end{figure}
+
+\subsection{Interpretation}
+
+To interpret the tree, we begin at the top (root) node and work downward. The inequality at listed at each node splits the data. If the observation satisfies the inequality, we visit the left subtree; otherwise, we visit the right subtree. We continue recursively until we reach a leaf, which indicates whether that dyad month should be classified as peaceful (green) or at war (red). For example, an observation with less than 14 investigations in that dyad-month would cause us to trace the left subtree of the root note, and classify that observation as peaceful (war occurs in less than one percent of such observations). By contrast, a month with between 34 and 176 investigations, more than 28 statements, and at least 32 acts of force has about a 77 percent chance of being at war in the training data. 
+
+All of the twenty event types described above were supplied as candidate variables to the model, as were the percentage of observations within each quadrant (i.e. material cooperation, verbal cooperation, material conflict, and verbal conflict). Of these, seven variables are included in the final tree. Investigations feature prominently in the first three splits. At first this seemed curious, given that investigations are classified as material cooperation by CAMEO (compare node eight). Upon closer examination, this category includes investigations of crime, corruption, human rights abuses, military action, and war crimes. Given that humanitarian interventions feature prominently in the MID dataset during the period under consideration, the influence of this variable becomes less surprising. For example, NATO efforts in the Balkans involve a large number of dyads involved in the investigation of war crimes and other human rights violations. 
+
+The other splits are less surprising. Demands (node four) are likely to be more associated with domestic conflicts, such as protest movements, rather than interstate disputes. Large amounts of aid make conflict less likely (node seven), as would be expected. Unconventional violence (e.g. mass killings and ethnic cleansing) and the use of force (e.g. fighting with small arms, artillery, or aircraft) are associated with MIDs for obvious reasons. Overall the model seems to match the types of conflict observed in the 1990s, but might do less well in later periods. 
+
+\subsection{Model Diagnostics}
+
+How does the tree perform relative to other classification models? Table \ref{cart-perf} compares the tree above to a null model (all observations are predicted to be peaceful) and a logistic regression using the same features as the CART model. The data was split into two parts, a training set for fitting the models, and a test set for out-of-sample comparison. This prevents a model that overfits the data from appearing superior to one with more generality. The classification tree outperforms the other two models in the training data (1992-1998, $n=372,271$). For the test data (1999-2001, $n=213,218$), the tree has the same mean-squared error (MSE) as the null model, but better precision and recall. Compared to logistic regression, the tree has worse recall but much better precision for the test data. This suggests that the classification tree generated more false negatives (i.e. missed the occurrence of some conflicts) in the test data.
+
+\begin{table}
+	\caption{Comparison of CART to Alternative Models}
+	\label{cart-perf}
+  \begin{center}
+  \begin{tabular}{l|ccc|ccc}
+   \multicolumn{1}{c}{} & \multicolumn{3}{c}{Training Data} & \multicolumn{3}{c}{Test Data} \\
+  Model & MSE & Precision & Recall & MSE & Precision & Recall \\
+  \midrule
+  Null & 0.0075 & 0.000 & 0.000 & 0.0066 & 0.000 & 0.000 \\
+  GLM & 0.0082 & 0.158 & 0.022  & 0.0079 & 0.142 & 0.038 \\
+  CART & 0.0067 & 0.702 & 0.192 & 0.0066 & 0.422 & 0.027 
+  \end{tabular}
+  \end{center}
+\end{table}
+
 
 \section{Conclusion}
 \label{conclusion}
-
-% \citep{gerner1994, grimmer2013} current method of mids
-% \citep{king2003automated, mikhaylov2012coder, ruggeri2011events} cost effectiveness of automation
-
-% in paper:
-% discuss human-intensive methods of coding in terms of their algorithmic complexity and costs
-% discuss HMM and HARM
-% present preliminary results from gdelt -> mids
-
 
 
 
