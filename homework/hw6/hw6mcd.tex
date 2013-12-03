@@ -57,18 +57,18 @@ Given a vector of probabilities $p$ of length $n$, we wish to compute the probab
 
 One (inefficient) way to go about this is to iterate over all of the possible subsets $S$ of $n$ that could offer $k$ successes and $n-k$ failures. For each of those subsets $s \in S$, we can multiply the probabilities of the successes ($s_a$), $\prod_{i \in s_a} p_i$, and the complements of the probabilities for the failures ($s_b$), $\prod_{j \in s_b} (1-p_j)$. This gives us the formula
 \begin{eqnarray*}
-Pr(k \text{successes}) = \sum_{s \in S} \prod_{i \in s_a} p_i \prod_{j \in s_b} (1-p_j)
+Pr(k \text{ successes}) = \sum_{s \in S} \prod_{i \in s_a} p_i \prod_{j \in s_b} (1-p_j)
 \end{eqnarray*}
 However, there are ${n \choose k}={n! \over k!(n-k)!}$ elements in $S$, which is quite large and makes this algorithm inefficient.
 
 A more efficient approach uses recursion, alternating between addition and subtraction to avoid double-counting. Again, if $k>n$, we return zero. The base case of the recursion is $k=0$, in which case we return the product of all failure probabilities, $\prod_j=1^n (1-p_j$. For $0<k<=n$, 
 \begin{eqnarray*}
-Pr(k \text{successes}) = \frac{1}{k} \sum_{i=1}^{k} \sum_{j=1}^n ({p_j \over 1-p_j})^i Pr(k-i \text{ successes}) (-1)^{i-1}
+Pr(k \text{ successes}) = \frac{1}{k} \sum_{i=1}^{k} \sum_{j=1}^n ({p_j \over 1-p_j})^i Pr(k-i \text{ successes}) (-1)^{i-1}
 \end{eqnarray*}
 
-Notice that the inner term $\sum_{j=1}^n (p_j \over 1-p_j)=C$ is constant for a given problem, so we can compute it once at the beginning:
+Notice that the inner term $\sum_{j=1}^n ({p_j \over 1-p_j})=C$ is constant for a given problem, so we can compute it once at the beginning:
 \begin{eqnarray*}
-Pr(k \text{successes}) = \frac{1}{k} \sum_{i=1}^{k} C^i Pr(k-i \text{ successes}) (-1)^{i-1}
+Pr(k \text{ successes}) = \frac{1}{k} \sum_{i=1}^{k} C^i Pr(k-i \text{ successes}) (-1)^{i-1}
 \end{eqnarray*}
 
  We are then left with a sum of size $k$ and $k+1$ recursive calls. Using $n$ as an upper bound on $k$, this is $O(n \times n + n)=O(n^2)$, as desired. 
@@ -86,6 +86,7 @@ Pr(k \text{successes}) = \frac{1}{k} \sum_{i=1}^{k} C^i Pr(k-i \text{ successes}
 \item Because $S(C)$ can be computed in polynomial time, the adversary can use the encrypted transmission $P(M)$ to compute $M=S(P(M))$. 
 \item Thus, if $P=NP$, an adversary can break RSA encryption. 
 \end{enumerate}
+\end{answer}
 
 \begin{answer}{3}
 % A kite is a graph on an even number of vertices, say 2n, in which n of the vertices form a clique and the remaining n vertices are connected in a "tail" that consists of a path joined to one of the vertices of the clique. Given a graph and a goal g, the KITE problem asks for a subgraph which is a kite and which contains 2g nodes. Prove that KITE is NP-complete.
@@ -97,8 +98,39 @@ If we are given a graph $G=\{V,E\}$ and asked to perform $CLIQUE$, we could redu
 Finding a polynomial-time solution to $KITE$ would imply a polynomial-time solution to $CLIQUE$.Because $CLIQUE$ is $NP$-complete and can be reduced to $KITE$, $KITE$ must also be $NP$-complete. 
 \end{answer}
 
+\begin{answer}{4}
+
+% In the MULTIWAY CUT problem, the input is an undirected graph G = (V,E) and a set of terminal nodes s1,s2,...,sk ∈ V. The goal is to find the minimum set of edges in E whose removal leaves all terminals in different components.
+% (a) Show that this problem can be solved exactly in polynomial time when k = 2. 
+% (b) Give an approximation algorithm with ratio at most 2 for the case k = 3.
+% (c) Design a local search algorithm for multiway cut.
+
+\paragraph{A} 
+
+When $k=2$, there are exactly two terminal nodes. Notice that if there is more than one edge in $E$ containing $s_i$, then $s_i$ is not a terminal node. Thus, any cut of the graph is also a multiway cut for $k=2$. We can reduce minimum cut to maximum flow by seeking the maximum flow from $s_1$ and $s_2$. Maximum flow has an exact, polynomial solution when $k=2$, so we can exactly solve the multiway cut problem in polynomial time when $k=2$. 
+
+\paragraph{B} 
+
+Let $C^*$ denote the optimal solution to the multiway cut problem. For each $s_1, ..., s_3$ there is a subset of $C^*$ that contains the cut removing $s_i$ from the rest of $G$; denote this $C_i^*$. Notice that $C^* = C_1^* \cup C_2^* \cup C_3^*$. 
+
+Next, notice that the weight of $C_i^*$ must be less than or equal to the weight of all of the edges containing $s_i$, because the set of all edges containing $s_i$ is also a cut. 
+
+Each edge is connected to exactly two components, at most two of which can be in $\{s_1, s_2, s_3\}$. Thus, if we remove all of the edges connected to each of the terminal nodes, this will be at most twice the weight of the optimal solution $C^*$. This gives us a two-approximation for the multiway cut problem when $k=3$. 
+
+\paragraph{C}
+
+We can use a greedy algorithm for multiway cut. 
+
+\begin{enumerate}
+\item Find the minimum cut that splits $G$ into two components by running minimum flow from each $s_i \in V$ to each $s_{-i} \in V$. Denote the two resulting components by $G^\prime_1, G^\prime_2$. 
+\item Find the minimum cut dividing $G^\prime_1$ or $G^\prime_2$, yielding $G^\prime_3$ (and a modified $G^\prime_1$ or $G^\prime_2$). 
+\item Continue this process until all $k$ terminal nodes are in their own component. 
+\end{enumerate}
+
+Notice that this process is similar to the approximation in (B) above, in which we treat the subgraph at each step of the greedy search as its own terminal (temporarily). Similarly, this is a two-approximation of the optimal multiway cut. 
 
 \end{answer}
+
 
 
 \end{document}
