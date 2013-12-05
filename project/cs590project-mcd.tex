@@ -4,7 +4,7 @@
 \usepackage{fullpage}
 \usepackage{lastpage}
 \usepackage{enumerate}
-\usepackage[nofiglist, notablist]{endfloat}
+% \usepackage[nofiglist, notablist]{endfloat}
 \usepackage{fancyhdr}
 \usepackage{hyperref}
 \usepackage{mathrsfs}
@@ -47,7 +47,7 @@
 \end{center}
 
 \vspace{1in}
-\paragraph{Abstract} How do computational and statistical efficiency interact, and what are the trade-offs between them? In the era of ``big data'' this question has become increasingly relevant. This project explores that question in the context of a particular machine learning algorithm (classification trees) and a particular problem (automated processing of political indicators). Applying machine learning to the classification of political event data can greatly reduce the cost in human effort, time, and money. The motivation for this project is to update the Militarized Interstate Disputes (MID) dataset, which has been widely used in academic research and policy discussions. The MID project relies on humans reading journalistic accounts and manually entering the classification of the event according to a defined schema. This dependence on humans is both less accurate, less efficient, and more expensive than automated methods. The results of this analysis suggest that automated methods can provide a first-pass classification of political indicators at a huge savings of time and money, without sacrificing accuracy or interpretability. 
+\paragraph{Abstract} How do computational and statistical efficiency interact, and what are the trade-offs between them? In the era of ``big data'' this question has become increasingly relevant. This project explores that question in the context of a particular machine learning algorithm (classification trees) and a particular problem (automated processing of political indicators). Applying machine learning to the classification of political event data can greatly reduce the cost in human effort, time, and money. The motivation for this project is to update the Militarized Interstate Disputes (MID) dataset, which has been widely used in academic research and policy discussions. The MID project relies on humans reading journalistic accounts and manually entering the classification of the event according to a defined schema. This dependence on humans is less accurate, less efficient, and more expensive than automated methods. The results of this analysis suggest that automated methods can provide a first-pass classification of political indicators at a huge savings of time and money, without sacrificing interpretability. 
 
 
 \pagebreak
@@ -111,7 +111,7 @@ A schematic tree consists of a node that \emph{splits} the data based on a \emph
   \end{center}
 \end{figure}
 
-CART greedily grows a tree $T$ from a root node by adding splits based on features. At each stage, there is an impurity function $I(T)$ that measures the (in)accuracy of the existing classifications. When adding another split to the tree, the CART algorithm seeks to maximize the impurity reduction $\Delta I$. The measure of impurity reduction is supplied to the algorithm, as is a complexity parameter, $\kappa$. We can think of $\kappa$ as the cost of adding another variable to the tree. When $\kappa=\infty$ the tree will consist of only the root node, and as we reduce $\kappa$ toward zero we allow the tree to grow. However, setting $\kappa$ too low can result in overfitting, which can be assessed via cross-validation. For more on classification trees in general and the implementation used for this project, see \citep{murphy2012machine,olshen1984classification,therneau1997introduction}. For $n$ observations, classification is at least as complex as sorting, giving us a lower bound of $\Theta(n \log n)$. Careful implementation with greedy algorithms can reach $\Omega(n \log n)$ \citep{latkowski2003high}. 
+CART greedily grows a tree $T$ from a root node by adding splits based on features. At each stage, there is an impurity function $I(T)$ that measures the (in)accuracy of the existing classifications. When adding another split to the tree, the CART algorithm seeks to maximize the impurity reduction $\Delta I$. The measure of impurity reduction is supplied to the algorithm, as is a complexity parameter, $\kappa$. We can think of $\kappa$ as the cost of adding another variable to the tree. When $\kappa=\infty$ the tree will consist of only the root node, and as we reduce $\kappa$ toward zero we allow the tree to grow. However, setting $\kappa$ too low can result in overfitting, which can be assessed via cross-validation. For more on classification trees in general and the implementation used for this project, see \citep{murphy2012machine,olshen1984classification,therneau1997introduction}. For $n$ observations, classification is at least as complex as sorting, giving us a lower bound of $\Omega(n \log n)$. Careful implementation with greedy algorithms can reach $\Theta(n \log n)$ \citep{latkowski2003high}. 
 
 Given a set of features $H$, a cost function $I(T)$, and a minimum complexity $\kappa$, the greedy top-down tree-building algorithm at is as follows:
 
@@ -203,7 +203,7 @@ The classification tree outperforms the other two models in the training data (1
 \section{Conclusion}
 \label{conclusion}
 
-Classification trees strike a nice balance between computational and statistical efficiency. The computational complexity of greedy tree-building is $\Omega(n \log n)$, which is the best that can be hoped for. Statistically, CART outperforms logisitic regression using a generalized linear model (GLM). In the application here, this is likely because the classification tree handled dependencies between features better than the linear model. 
+Classification trees strike a nice balance between computational and statistical efficiency. The computational complexity of greedy tree-building is $\Theta(n \log n)$, which is the best that can be hoped for. Statistically, CART outperforms logisitic regression using a generalized linear model (GLM). In the application here, this is likely because the classification tree handled dependencies between features better than the linear model. 
 
 The interpretation of the tree suggests that it fits the 1990s very well, but may perform less well in the future. Perhaps an ensemble of trees based on a few months of data at a time (with the addition of more trees as the data extend in to the future) would perform better and account for changes in the data generating process over time. A Bayesian ensemble of several classification trees could improve performance while still maintaining more interpretability than is available in random forests \citep{arva2013improving,montgomery2012improving,Raftery:1995,raftery2005using}.
 
